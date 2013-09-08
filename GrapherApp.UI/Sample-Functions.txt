@@ -1,0 +1,195 @@
+﻿bottom-left;top-right
+.....................
+S:
+coef = 2
+(sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, coef)), 1 / coef) + 0.5)
+ex: 
+(sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, 2)), 1 / 2) + 0.5)
+
+Z:
+coef = 2 {1 - MAX_DOUBLE}
+(pow(x, coef) + (1 - pow(1 - x, coef)))/2
+ex:
+(pow(x, 10) + (1 - pow(1 - x, 10)))/2
+
+alternative S
+coef = 2 {0 - 1}
+(pow(x, coef) + (1 - pow(1 - x, coef)))/2
+ex:
+(pow(x, 10) + (1 - pow(1 - x, 10)))/2
+
+hill like:
+coef = 0.4 {0 - 1}
+(pow(x, coef) + (1 - pow(1 - x, 1/coef)))/2
+ex:
+(pow(x, 0.4) + (1 - pow(1 - x, 1/0.4)))/2
+
+
+cup like:
+coef = 1.9 {1 - MAX_DOUBLE}
+(pow(x, coef) + (1 - pow(1 - x, 1/coef)))/2
+ex:
+(pow(x, 1.9) + (1 - pow(1 - x, 1/1.9)))/2
+----------------------------------------------------------------------------
+bell curve
+..........
+
+Math.Pow(5, -(Math.Pow((x - HOR_SHIFT), 2) / Math.Pow(1 / STAND_DEV, 2)))
+Math.Pow(5, -(Math.Pow((x - 0.5), 2) / Math.Pow(1 / 4.0, 2))); // x = 0.5 is on TOP
+Math.Pow(5, -(Math.Pow((x - 0.0), 2) / Math.Pow(1 / 4.0, 2))); // x = 0.0 is on TOP
+Math.Pow(5, -(Math.Pow((x - 1.0), 2) / Math.Pow(1 / 4.0, 2))); // x = 1.0 is on TOP
+
+
+2.71828^-((x-0)^2/((2*1)^2))*2
+
+
+2.71828^-((x-XPEAK)^2/((2*STANDDEV)^2))*YPEAK
+
+
+BONUS WOOP: pow(5, -(pow((x - 0.842351), 2) / pow((2 * 0.234197), 2))) * 1.2
+
+
+$mu = 0.5 (center pick)
+$sigma = 2 - MAX
+exp(-0.5 * (x - $mu) * (x - $mu) / ($sigma*$sigma)) / ($sigma * sqrt(2.0 * M_PI));
+
+$power = 4
+exp(-0.5 * (x - 0.5) * (x - 0.5) / ($sigma,$power)) / ($sigma * sqrt(2.0 * M_PI));
+ex:
+exp(-0.5 * (x - 0.5) * (x - 0.5) / pow(0.399, 4)) / (0.399 * sqrt(2.0 * M_PI))
+
+..............
+(float)Math.Pow(5, -(Math.Pow(x - 0.5, 2) / 0.580482)) * 2f - 1f
+if x = 0 then y = 0
+if x = 0.5 then y = 1
+if x = 1 then y = 0
+----------------------------------------------------------------------------
+fading out sine
+..........
+Math.Sin(x*Math.PI*FREQUENCE)/(FADE_MAGNITUDE+x) 
+Math.Sin(x*Math.PI*2)/(2+x) 
+Math.Sin(x*Math.PI*12)/(2+x) 
+// Min: 
+-Math.Sin(x*Math.PI*(1/x)*0.5)/(2+x) 
+// MAX: 
+Math.Sin(x*Math.PI*(1/x)*0.5)/(2+x)  
+// Min Bound: 
+Math.Sin(x*Math.PI*10)/(2+x) + Math.Sin(x*Math.PI*(1/x)*0.5)/(2+x) 
+// Max Bound:
+Math.Sin(x*Math.PI*10)/(2+x) - Math.Sin(x*Math.PI*(1/x)*0.5)/(2+x) 
+OR
+Math.Sin(x*Math.PI*10)/(2+x) - Math.Sin(x*Math.PI*(1/x)*0.5)/(2+x) + 1
+
+----------------------------------------------------------------------------
+fading out cos
+..........
+Math.Cos(x*Math.PI*FREQUENCE)/(FADE_MAGNITUDE+x) 
+Math.Cos(x*Math.PI*2)/(2+x) 
+Math.Cos(x*Math.PI*12)/(2+x) 
+// Min: 
+Math.Cos(x*Math.PI*(1/x))/(2+x) 
+// MAX: 
+-Math.Cos(x*Math.PI*(1/x))/(2+x) 
+// Min Bound: 
+Math.Cos(x*Math.PI*12)/(2+x) -Math.Cos(x*Math.PI*(1/x))/(2+x) 
+// Max Bound:
+Math.Cos(x*Math.PI*12)/(2+x) +Math.Cos(x*Math.PI*(1/x))/(2+x) 
+OR
+Math.Cos(x*Math.PI*12)/(2+x) +Math.Cos(x*Math.PI*(1/x))/(2+x) + 1
+
+----------------------------------------------------------------------------
+fading in sine
+..........
+Math.Sin(x*Math.PI*FREQUENCE)/(FADE_MAGNITUDE-x) 
+Math.Cos(x*Math.PI*2)/(2-x) 
+Math.Cos(x*Math.PI*10)/(2-x) 
+// Min: 
+-Math.Sin(x*Math.PI*(1/x)*0.5)/(2-x) 
+// MAX: 
+Math.Sin(x*Math.PI*(1/x)*0.5)/(2-x)  
+// Min Bound: 
+Math.Sin(x*Math.PI*10)/(2-x) + Math.Sin(x*Math.PI*(1/x)*0.5)/(2-x) 
+// Max Bound:
+Math.Sin(x*Math.PI*10)/(2-x) - Math.Sin(x*Math.PI*(1/x)*0.5)/(2-x) 
+OR
+Math.Sin(x*Math.PI*10)/(2-x) - Math.Sin(x*Math.PI*(1/x)*0.5)/(2-x) + 1
+
+----------------------------------------------------------------------------
+fading in cos
+..........
+Math.Cos(x*Math.PI*FREQUENCE)/(FADE_MAGNITUDE-x) 
+Math.Cos(x*Math.PI*2)/(2-x) 
+Math.Cos(x*Math.PI*12)/(2-x) 
+// Min: 
+Math.Cos(x*Math.PI*(1/x))/(2-x) 
+// MAX: 
+-Math.Cos(x*Math.PI*(1/x))/(2-x) 
+// Min Bound: 
+Math.Cos(x*Math.PI*12)/(2-x) -Math.Cos(x*Math.PI*(1/x))/(2-x) 
+// Max Bound:
+Math.Cos(x*Math.PI*12)/(2-x) +Math.Cos(x*Math.PI*(1/x))/(2-x) 
+OR
+Math.Cos(x*Math.PI*12)/(2-x) +Math.Cos(x*Math.PI*(1/x))/(2-x) + 1
+
+
+----------------------------------------------------------------------------
+top-left;bottom-right
+.....................
+Z:
+coef = 2
+-(sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, coef)), 1 / coef) - 0.5)
+ex: 
+-(sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, 3)), 1 / 3) - 0.5)
+----------------------------------------------------------------------------
+arc
+...
+coef = 2
+-pow(2, coef) * pow(abs(x - 0.5), coef) + 1
+ex: 
+-pow(2, 3) * pow(abs(x - 0.5), 3) + 1
+----------------------------------------------------------------------------
+cup
+...
+coef = 3
+-sign(x- 2) * pow(abs(x- 0.5), coef) * pow(2, coef) 
+ex: 
+-sign(x- 2) * pow(abs(x- 0.5), 2) * pow(2, 2) 
+
+
+
+
+=================================
+const double coef = 2.6;
+//DrawGraph(x => -(sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, coef)), 1 / coef) - 0.5));
+DrawGraph(Colors.Red, x => (sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, coef)), 1 / coef) + 0.5));
+
+DrawGraph(Colors.Blue, x => 1.4*x - 0.2);
+
+DrawGraph(Colors.Green, x => 99999 * x - 99999 * (1/7.0));
+
+------------------------------
+triangle almost:
+const double coef2 = 1.5;
+DrawGraph(Colors.Green, x => (0.5 / pow(0.5, coef2)) * pow(abs(x - 0.5), coef2) + 0.5);
+------------------------------
+steep mountain:
+-((2*x*x) -(x^(1/3)))*1.5
+OR
+-((2*x*x) -pow(x,(1/3)))*1.5
+------------------------------
+tolted bell curve
+exp(-0.5 * ((x^(1/3)) - 0.5) * ((x^(1/3)) - 0.5) / 0.399 ^ 4) / (0.399 * sqrt(2.0 ^ 3.14159265359))
+OR
+exp(-0.5 * (pow(x,(1.0/3.0)) - 0.5) * (pow(x,(1.0/3.0)) - 0.5) / pow(0.399, 4)) / (0.399 * sqrt(pow(2.0, 3.14159265359)))
+the other way:
+exp(-0.5 * (pow(x,(3.0)) - 0.5) * (pow(x,(3.0)) - 0.5) / pow(0.399, 4)) / (0.399 * sqrt(pow(2.0, 3.14159265359)))
+===============================
+elastic in out:
+(71.25*(x * (x * x))*(x * x) + -176.5*(x * x)*(x * x) + 145.5*(x * (x * x)) + -43*(x * x) + 3.75*x)
+
+elastic in:
+(33*(x * (x * x))*(x * x) + -59*(x * x)*(x * x) + 32*(x * (x * x)) + -5*(x * x))
+
+elastic out:
+(33*(x * (x * x))*(x * x) + -106*(x * x)*(x * x) + 126*(x * (x * x)) + -67*(x * x) + 15*x)
+===============================
