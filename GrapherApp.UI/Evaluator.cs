@@ -1,6 +1,7 @@
 ﻿using System;
 using System.CodeDom.Compiler;
 using System.Linq;
+using System.Text;
 
 
 namespace GrapherApp.UI
@@ -119,7 +120,20 @@ namespace GrapherApp.UI
             {
                 code = code.Trim();
 
-                code = code.Replace("Math.", "");
+                code =
+                    new StringBuilder(code)
+                        .Replace("Math.", "")
+                        .Replace("0f", "0")
+                        .Replace("1f", "1")
+                        .Replace("2f", "2")
+                        .Replace("3f", "3")
+                        .Replace("4f", "4")
+                        .Replace("5f", "5")
+                        .Replace("6f", "6")
+                        .Replace("7f", "7")
+                        .Replace("8f", "8")
+                        .Replace("9f", "9")
+                        .ToString();
 //                if (!code.StartsWith("return")) code = "return " + code;
 //                if (!code.EndsWith(";")) code = code + ";";
 
