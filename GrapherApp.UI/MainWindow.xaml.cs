@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -25,6 +26,8 @@ namespace GrapherApp.UI
             TheCanvas.RenderTransform = t;
 
             MouseWheel += TheCanvas_MouseWheel;
+            Version version = Assembly.GetEntryAssembly().GetName().Version;
+            this.Title = "Grapher " + version.Major + "." + version.Minor;
         }
         void TheCanvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
