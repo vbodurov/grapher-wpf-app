@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -25,9 +26,20 @@ namespace GrapherApp.UI
             t.Children.Add(_scale = new ScaleTransform(1, 1, 275, 275));
             TheCanvas.RenderTransform = t;
 
+            KeyDown += MainWindow_KeyDown;
             MouseWheel += TheCanvas_MouseWheel;
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             this.Title = "Grapher " + version.Major + "." + version.Minor;
+        }
+
+        void MainWindow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key != Key.Enter || 
+                (!Keyboard.IsKeyDown(Key.LeftCtrl) && 
+                 !Keyboard.IsKeyDown(Key.RightCtrl) &&
+                 !Keyboard.IsKeyDown(Key.LeftAlt) &&
+                 !Keyboard.IsKeyDown(Key.RightAlt))) return;
+            Button_Click(sender, e);
         }
         void TheCanvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {

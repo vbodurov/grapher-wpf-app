@@ -12,6 +12,7 @@ namespace GrapherApp.UI
 
                 class Eval
                 {
+                    public function ifNotNan(a : double, b : double) { return double.IsNaN(a) ? b : a; }
                     public function ifElse(condition : boolean, ifTrue : double, ifFalse : double) { return condition ? ifTrue : ifFalse; }
                     public function avg(a : double, b : double) { return (b - a) * 0.5 + a; }
                     public function pow(x : double, n : double) { return System.Math.Pow(x, n); }
@@ -39,6 +40,7 @@ namespace GrapherApp.UI
                     public function log(x : double, y : double) { return System.Math.Log(x, y); }
                     public function log10(x : double) { return System.Math.Log10(x); }
 
+                    public function IfNotNan(a : double, b : double) { return double.IsNaN(a) ? b : a; }
                     public function IfElse(condition : boolean, ifTrue : double, ifFalse : double) { return condition ? ifTrue : ifFalse; }
                     public function Avg(a : double, b : double) { return (b - a) * 0.5 + a; }
                     public function Pow(x : double, n : double) { return System.Math.Pow(x, n); }
