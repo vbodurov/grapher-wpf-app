@@ -51,12 +51,12 @@ BONUS WOOP: pow(5, -(pow((x - 0.842351), 2) / pow((2 * 0.234197), 2))) * 1.2
 
 $mu = 0.5 (center pick)
 $sigma = 2 - MAX
-exp(-0.5 * (x - $mu) * (x - $mu) / ($sigma*$sigma)) / ($sigma * sqrt(2.0 * M_PI));
+exp(-0.5 * (x - $mu) * (x - $mu) / ($sigma*$sigma)) / ($sigma * sqrt(2.0 * PI));
 
 $power = 4
-exp(-0.5 * (x - 0.5) * (x - 0.5) / ($sigma,$power)) / ($sigma * sqrt(2.0 * M_PI));
+exp(-0.5 * (x - 0.5) * (x - 0.5) / ($sigma,$power)) / ($sigma * sqrt(2.0 * PI));
 ex:
-exp(-0.5 * (x - 0.5) * (x - 0.5) / pow(0.399, 4)) / (0.399 * sqrt(2.0 * M_PI))
+exp(-0.5 * (x - 0.5) * (x - 0.5) / pow(0.399, 4)) / (0.399 * sqrt(2.0 * PI))
 
 ..............
 (float)Math.Pow(5, -(Math.Pow(x - 0.5, 2) / 0.580482)) * 2f - 1f
@@ -130,8 +130,25 @@ Math.Cos(x*Math.PI*12)/(2-x) -Math.Cos(x*Math.PI*(1/x))/(2-x)
 Math.Cos(x*Math.PI*12)/(2-x) +Math.Cos(x*Math.PI*(1/x))/(2-x) 
 OR
 Math.Cos(x*Math.PI*12)/(2-x) +Math.Cos(x*Math.PI*(1/x))/(2-x) + 1
-
-
+----------------------------------------------------------------------------
+SMOOTH STAIRS:
+const float p = 0.7;
+var y = IfElse(x >= 0,
+		Math.Max(
+			Math.Pow(5, -(Math.Pow((x - p), 4) / Math.Pow(1 / 8.0, 2))),
+			Math.Sign(x-p)
+		),
+		Math.Min(
+			-Math.Pow(5, -(Math.Pow((x+ p), 4) / Math.Pow(1 / 8.0, 2))),
+			Math.Sign(x+p)
+		)
+	);
+return y;
+----------------------------------------------------------------------------
+low spike, high spike
+IfElse(x > 0, 
+  Math.Sin(Math.Pow(1-x, (1/Math.Pow(1-x,2))*4)*Math.PI), 
+  -Math.Sin(Math.Pow(1+x, (1/Math.Pow(1+x,2))*4)*Math.PI))
 ----------------------------------------------------------------------------
 top-left;bottom-right
 .....................

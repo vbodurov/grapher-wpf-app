@@ -5,7 +5,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="190" />
+            <RowDefinition Height="5" />
+            <RowDefinition Height="195" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
@@ -14,9 +15,12 @@
             <Canvas Name="TheCanvas" Canvas.Left="237" Canvas.Top="25" ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
         </Canvas>
 
-        <Grid Grid.Row="1">
+        <GridSplitter Height="5" Grid.Row="1" ResizeDirection="Rows" HorizontalAlignment="Stretch" Background="CornflowerBlue"></GridSplitter>
+
+        <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="100" />
+                <RowDefinition Height="5" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="30" />
                 <RowDefinition Height="30" />
@@ -27,26 +31,28 @@
                 <ColumnDefinition Width="145"/>
             </Grid.ColumnDefinitions>
 
-            <Rectangle Grid.Row="0" Grid.Column="0" Width="10" Height="100" Fill="Red"></Rectangle>
-            <TextBox Grid.Row="0" Grid.Column="1" Name="SourceCode1" AcceptsReturn="True" AcceptsTab="True" />
-            <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="4" Click="Button_Click">
+            <Border Grid.Row="0" Grid.Column="0" Background="Red" VerticalAlignment="Stretch"></Border>
+            <TextBox Grid.Row="0" Grid.Column="1" Name="SourceCode1" AcceptsReturn="True" AcceptsTab="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
+            <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="5" Click="Button_Click">
                 <StackPanel Orientation="Vertical">
                     <Label FontSize="15" HorizontalAlignment="Center">Run</Label>
                     <Label FontSize="10" HorizontalAlignment="Center">(Ctrl + Enter) OR (Alt + Enter)</Label>
                 </StackPanel>
             </Button>
 
-            <Rectangle Grid.Row="1" Grid.Column="0" Width="10" Height="100" Fill="Green"></Rectangle>
-            <TextBox Grid.Row="1" Grid.Column="1" Name="SourceCode2"  />
+            <GridSplitter Height="5" Grid.Row="1" Grid.ColumnSpan="2" ResizeDirection="Rows" HorizontalAlignment="Stretch" Background="CornflowerBlue"></GridSplitter>
 
-            <Rectangle Grid.Row="2" Grid.Column="0" Width="10" Height="100" Fill="Blue"></Rectangle>
-            <TextBox Grid.Row="2" Grid.Column="1" Name="SourceCode3" />
+            <Border Grid.Row="2" Grid.Column="0" Background="Green"></Border>
+            <TextBox Grid.Row="2" Grid.Column="1" Name="SourceCode2"  />
 
-            <Rectangle Grid.Row="3" Grid.Column="0" Width="10" Height="100" Fill="Purple"></Rectangle>
-            <TextBox Grid.Row="3" Grid.Column="1" Name="SourceCode4" />
+            <Border Grid.Row="3" Grid.Column="0" Background="Blue"></Border>
+            <TextBox Grid.Row="3" Grid.Column="1" Name="SourceCode3" />
+
+            <Border Grid.Row="4" Grid.Column="0" Background="Purple"></Border>
+            <TextBox Grid.Row="4" Grid.Column="1" Name="SourceCode4" />
         </Grid>
 
 
-        <TextBlock  Grid.Row="2" Name="Message" Foreground="Red"></TextBlock>
+        <TextBlock  Grid.Row="3" Name="Message" Foreground="Red"></TextBlock>
     </Grid>
 </Window>

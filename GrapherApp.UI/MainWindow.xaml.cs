@@ -14,7 +14,7 @@ namespace GrapherApp.UI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ScaleTransform _scale;
+        private readonly ScaleTransform _scale;
 
         public MainWindow()
         {
@@ -30,6 +30,16 @@ namespace GrapherApp.UI
             MouseWheel += TheCanvas_MouseWheel;
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             this.Title = "Grapher " + version.Major + "." + version.Minor;
+
+            try
+            {
+                _evaluator = new Evaluator();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+                Close();
+            }
         }
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -41,7 +51,7 @@ namespace GrapherApp.UI
                  !Keyboard.IsKeyDown(Key.RightAlt))) return;
             Button_Click(sender, e);
         }
-        void TheCanvas_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        void TheCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             var n = e.Delta > 0 ? 0.05 : -0.05;
             var candidate = _scale.ScaleX + n;
@@ -54,7 +64,7 @@ namespace GrapherApp.UI
         
         private readonly List<Line> _lines = new List<Line>(); 
 
-        private readonly Evaluator _evaluator = new Evaluator();
+        private readonly Evaluator _evaluator;
         private void DrawGraphFromSource(Color color, string source)
         {
 

@@ -12,6 +12,7 @@ namespace GrapherApp.UI
 
                 class Eval
                 {
+
                     public function ifNotNan(a : double, b : double) { return double.IsNaN(a) ? b : a; }
                     public function ifElse(condition : boolean, ifTrue : double, ifFalse : double) { return condition ? ifTrue : ifFalse; }
                     public function avg(a : double, b : double) { return (b - a) * 0.5 + a; }
@@ -21,7 +22,6 @@ namespace GrapherApp.UI
                     public function asin(x : double) { return System.Math.Asin(x); }
                     public function atan(x : double) { return System.Math.Atan(x); }
                     public function atan2(x : double, y : double) { return System.Math.Atan2(x, y); }
-                    public function pow(x : double) { return System.Math.Sign(x); }
                     public function sin(x : double) { return System.Math.Sin(x); }
                     public function sinh(x : double) { return System.Math.Sinh(x); }
                     public function cos(x : double) { return System.Math.Cos(x); }
@@ -40,40 +40,39 @@ namespace GrapherApp.UI
                     public function log(x : double, y : double) { return System.Math.Log(x, y); }
                     public function log10(x : double) { return System.Math.Log10(x); }
 
-                    public function IfNotNan(a : double, b : double) { return double.IsNaN(a) ? b : a; }
-                    public function IfElse(condition : boolean, ifTrue : double, ifFalse : double) { return condition ? ifTrue : ifFalse; }
-                    public function Avg(a : double, b : double) { return (b - a) * 0.5 + a; }
-                    public function Pow(x : double, n : double) { return System.Math.Pow(x, n); }
-                    public function Abs(x : double) { return System.Math.Abs(x); }
-                    public function Acos(x : double) { return System.Math.Acos(x); }
-                    public function Asin(x : double) { return System.Math.Asin(x); }
-                    public function Atan(x : double) { return System.Math.Atan(x); }
-                    public function Atan2(x : double, y : double) { return System.Math.Atan2(x, y); }
-                    public function Pow(x : double) { return System.Math.Sign(x); }
-                    public function Sin(x : double) { return System.Math.Sin(x); }
-                    public function Sinh(x : double) { return System.Math.Sinh(x); }
-                    public function Cos(x : double) { return System.Math.Cos(x); }
-                    public function Cosh(x : double) { return System.Math.Cosh(x); }
-                    public function Tan(x : double) { return System.Math.Tan(x); }
-                    public function Tanh(x : double) { return System.Math.Tanh(x); }
-                    public function Sqrt(x : double) { return System.Math.Sqrt(x); }
-                    public function Sign(x : double) { return System.Math.Sign(x); }
-                    public function Max(x : double, y : double) { return System.Math.Max(x, y); }
-                    public function Min(x : double, y : double) { return System.Math.Min(x, y); }
-                    public function Exp(x : double) { return System.Math.Exp(x); }
-                    public function Floor(x : double) { return System.Math.Floor(x); }
-                    public function Ceiling(x : double) { return System.Math.Ceiling(x); }
-                    public function Round(x : double) { return System.Math.Round(x); }
-                    public function Log(x : double) { return System.Math.Log(x); }
-                    public function Log(x : double, y : double) { return System.Math.Log(x, y); }
-                    public function Log10(x : double) { return System.Math.Log10(x); }
+                    public function IfNotNan(a : double, b : double) { return ifNotNan(a, b); }
+                    public function IfElse(condition : boolean, ifTrue : double, ifFalse : double) { return ifElse(condition, ifTrue, ifFalse); }
+                    public function Avg(a : double, b : double) { return avg(a,b); }
+                    public function Pow(x : double, n : double) { return pow(x, n); }
+                    public function Abs(x : double) { return abs(x); }
+                    public function Acos(x : double) { return acos(x); }
+                    public function Asin(x : double) { return asin(x); }
+                    public function Atan(x : double) { return atan(x); }
+                    public function Atan2(x : double, y : double) { return atan2(x, y); }
+                    public function Sin(x : double) { return sin(x); }
+                    public function Sinh(x : double) { return sinh(x); }
+                    public function Cos(x : double) { return cos(x); }
+                    public function Cosh(x : double) { return cosh(x); }
+                    public function Tan(x : double) { return tan(x); }
+                    public function Tanh(x : double) { return tanh(x); }
+                    public function Sqrt(x : double) { return sqrt(x); }
+                    public function Sign(x : double) { return sign(x); }
+                    public function Max(x : double, y : double) { return max(x, y); }
+                    public function Min(x : double, y : double) { return min(x, y); }
+                    public function Exp(x : double) { return exp(x); }
+                    public function Floor(x : double) { return floor(x); }
+                    public function Ceiling(x : double) { return ceiling(x); }
+                    public function Round(x : double) { return round(x); }
+                    public function Log(x : double) { return log(x); }
+                    public function Log(x : double, y : double) { return log(x, y); }
+                    public function Log10(x : double) { return log10(x); }
 
                     public function EvaluateCode(code : String, x : double) : double
                     {
-                        var E : double = System.Math.E;
-                        var e : double = System.Math.E;
-                        var PI : double = System.Math.PI;
-                        var pi : double = System.Math.PI;
+                        var E : double = Math.E;
+                        var e : double = Math.E;
+                        var PI : double = Math.PI;
+                        var pi : double = Math.PI;
                         return eval(code);
                     }
                 }";
@@ -104,7 +103,7 @@ namespace GrapherApp.UI
 
             if(compilerResult.Errors.Count > 0)
             {
-                throw new InvalidOperationException(String.Join("|", compilerResult.Errors.Cast<object>().Select(o => o.ToString()).ToArray()));
+                throw new InvalidOperationException("JavaScript evaluator error: "+String.Join("|", compilerResult.Errors.Cast<CompilerError>().Select(err => err.FileName + ":" + err.ErrorText).ToArray()));
             }
             
             var evalType =
@@ -137,9 +136,12 @@ namespace GrapherApp.UI
                         .Replace("7f", "7")
                         .Replace("8f", "8")
                         .Replace("9f", "9")
+                        .Replace("return ", "")
+                        .Replace("const ", "")
+                        .Replace("double ", "var ")
+                        .Replace("float ", "var ")
+                        .Replace("(float)", "")
                         .ToString();
-//                if (!code.StartsWith("return")) code = "return " + code;
-//                if (!code.EndsWith(";")) code = code + ";";
 
                 error = null;
                 return _evaluatorFunc(code, x);
