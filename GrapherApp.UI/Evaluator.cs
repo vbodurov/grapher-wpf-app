@@ -12,9 +12,9 @@ namespace GrapherApp.UI
 
                 class Eval
                 {
-
                     public function ifNotNan(a : double, b : double) { return double.IsNaN(a) ? b : a; }
                     public function ifElse(condition : boolean, ifTrue : double, ifFalse : double) { return condition ? ifTrue : ifFalse; }
+                    public function lerp(a : double, b : double, c : double) { return (b - a) * c + a; }
                     public function avg(a : double, b : double) { return (b - a) * 0.5 + a; }
                     public function pow(x : double, n : double) { return System.Math.Pow(x, n); }
                     public function abs(x : double) { return System.Math.Abs(x); }
@@ -42,6 +42,7 @@ namespace GrapherApp.UI
 
                     public function IfNotNan(a : double, b : double) { return ifNotNan(a, b); }
                     public function IfElse(condition : boolean, ifTrue : double, ifFalse : double) { return ifElse(condition, ifTrue, ifFalse); }
+                    public function Lerp(a : double, b : double, c : double) { return lerp(a, b, c); }
                     public function Avg(a : double, b : double) { return avg(a,b); }
                     public function Pow(x : double, n : double) { return pow(x, n); }
                     public function Abs(x : double) { return abs(x); }
@@ -69,10 +70,10 @@ namespace GrapherApp.UI
 
                     public function EvaluateCode(code : String, x : double) : double
                     {
-                        var E : double = Math.E;
-                        var e : double = Math.E;
-                        var PI : double = Math.PI;
-                        var pi : double = Math.PI;
+                        var E : double = System.Math.E;
+                        var e : double = System.Math.E;
+                        var PI : double = System.Math.PI;
+                        var pi : double = System.Math.PI;
                         return eval(code);
                     }
                 }";
