@@ -5,6 +5,10 @@ coef = 2
 (sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, coef)), 1 / coef) + 0.5)
 ex: 
 (sign(x - 0.5) * pow(abs(x - 0.5) / (0.5 / pow(0.5, 2)), 1 / 2) + 0.5)
+OR
+pow(abs(x*e), e) * pow(e,-abs(x*e)) 
+OR
+sign(x)*pow(abs(x), sin(e))
 
 Z:
 coef = 2 {1 - MAX_DOUBLE}
@@ -39,6 +43,11 @@ Math.Pow(5, -(Math.Pow((x - 0.5), 2) / Math.Pow(1 / 4.0, 2))); // x = 0.5 is on 
 Math.Pow(5, -(Math.Pow((x - 0.0), 2) / Math.Pow(1 / 4.0, 2))); // x = 0.0 is on TOP
 Math.Pow(5, -(Math.Pow((x - 1.0), 2) / Math.Pow(1 / 4.0, 2))); // x = 1.0 is on TOP
 
+OR
+
+pow(100000, -pow(x+0, 2)) // x = 0.0 is on TOP
+pow(100000, -pow(x+1, 2)) // x =-1.0 is on TOP
+pow(100000, -pow(x-1, 2)) // x = 1.0 is on TOP
 
 2.71828^-((x-0)^2/((2*1)^2))*2
 
@@ -144,11 +153,21 @@ var y = IfElse(x >= 0,
 		)
 	);
 return y;
+
+OR
+pow(x,0.05/pow(x,2))
 ----------------------------------------------------------------------------
 low spike, high spike
-IfElse(x > 0, 
-  Math.Sin(Math.Pow(1-x, (1/Math.Pow(1-x,2))*4)*Math.PI), 
-  -Math.Sin(Math.Pow(1+x, (1/Math.Pow(1+x,2))*4)*Math.PI))
+(x > 0) 
+  ? Math.Sin(Math.Pow(1-x, (1/Math.Pow(1-x,2))*4)*Math.PI)
+  : -Math.Sin(Math.Pow(1+x, (1/Math.Pow(1+x,2))*4)*Math.PI)
+  
+fade in spike, fade out spike
+var d = 4.5;
+pow(abs(x)*e*d, e) * pow(e,-abs(x)*e*d) 
+
+bottom of a heart
+pow(abs(x), pow(e,pow(abs(x), 2))) 
 ----------------------------------------------------------------------------
 top-left;bottom-right
 .....................
@@ -209,4 +228,3 @@ elastic in:
 
 elastic out:
 (33*(x * (x * x))*(x * x) + -106*(x * x)*(x * x) + 126*(x * (x * x)) + -67*(x * x) + 15*x)
-===============================
