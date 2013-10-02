@@ -1,159 +1,245 @@
 ﻿using System;
-using System.CodeDom.Compiler;
-using System.Linq;
-using System.Text;
+using Roslyn.Scripting;
+using Roslyn.Scripting.CSharp;
 
 
 namespace GrapherApp.UI
 {
+    /// <summary>
+    /// to test functions: http://cubic-bezier.com/#.26,1.66,.77,.3
+    /// </summary>
+    public static class f
+    {
+        const double epsilon = 0.000000001;
+        private static void GetCubicCoefficients(double a, double b, double c, double d, out double c0, out double c1, out double c2, out double c3)
+        {
+            c0 = -a + 3 * b - 3 * c + d;
+            c1 = 3 * a - 6 * b + 3 * c;
+            c2 = -3 * a + 3 * b;
+            c3 = a;
+        }
+        private static int GetQuadraticRoots(double a, double b, double c, out double r0, out double r1)
+        {
+            r0 = r1 = 0;
+
+            if (Math.Abs(a - 0) < epsilon)
+            {
+                if (Math.Abs(b - 0) < epsilon) return 0;
+                r0 = -c/b;
+                return 1;
+            }
+
+            var q = b * b - 4 * a * c;
+            var signQ =
+                        (q > 0) ? 1
+                        : q < 0 ? -1
+                        : 0;
+
+            if (signQ < 0)
+            {
+                return 0;
+            }
+            if (Math.Abs(signQ - 0) < epsilon)
+            {
+                r0 = -b/(2*a);
+                return 1;
+            }
+            var n = -b/(2*a);
+            r0 = n;
+            r1 = n;
+            var tmp = Math.Sqrt(q) / (2 * a);
+            r0 -= tmp;
+            r1 += tmp;
+            return 2;
+        }
+        private static int GetCubicRoots(double a, double b, double c, double d, out double r0, out double r1, out double r2)
+        {
+            r1 = r2 = 0;
+            if (Math.Abs(a - 0) < epsilon) return GetQuadraticRoots(b, c, d, out r0, out r1);
+
+            b /= a;
+            c /= a;
+            d /= a;
+
+            var q = (b * b - 3 * c) / 9.0;
+            var qCubed = q * q * q;
+            var r = (2 * b * b * b - 9 * b * c + 27 * d) / 54.0;
+
+            var diff = qCubed - r * r;
+            if (diff >= 0)
+            {
+                if (Math.Abs(q - 0) < epsilon)
+                {
+                    r0 = 0.0;
+                    return 1;
+                }
+
+                var theta = Math.Acos(r / Math.Sqrt(qCubed));
+                var qSqrt = Math.Sqrt(q); // won't change
+
+                r0 = -2 * qSqrt * Math.Cos(theta / 3.0) - b / 3.0;
+                r1 = -2 * qSqrt * Math.Cos((theta + 2 * Math.PI) / 3.0) - b / 3.0;
+                r2 = -2 * qSqrt * Math.Cos((theta + 4 * Math.PI) / 3.0) - b / 3.0;
+
+                return 3;
+            }
+            var tmp = Math.Pow(Math.Sqrt(-diff) + Math.Abs(r), 1 / 3.0);
+            var rSign = (r > 0) ? 1 : r < 0 ? -1 : 0;
+            r0 = -rSign * (tmp + q / tmp) - b / 3.0;
+            return 1;
+        }
+        public static double Bezier(double x, double bx, double by, double cx, double cy)
+        {
+            return Bezier(x, 0, 0, bx, by, cx, cy, 1, 1);
+        }
+        private static double GetSingleValue(double t, double a, double b, double c, double d)
+        {
+            return (t * t * (d - a) + 3 * (1 - t) * (t * (c - a) + (1 - t) * (b - a))) * t + a;
+        }
+        public static double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy)
+        {          
+            if (ax < dx)
+            {
+                if (x <= ax + epsilon) return ay;
+                if (x >= dx - epsilon) return dy;
+            }
+            else
+            {
+                if (x >= ax + epsilon) return ay;
+                if (x <= dx - epsilon) return dy;
+            }
+            double c0, c1, c2, c3;
+            GetCubicCoefficients(ax, bx, cx, dx, out c0, out c1, out c2, out c3);
+
+            double r0, r1, r2;
+            // x(t) = a*t^3 + b*t^2 + c*t + d
+            var rootsLength = GetCubicRoots(c0, c1, c2, c3-x, out r0, out r1, out r2); 
+            var time = Double.NaN;
+            if (rootsLength == 0)
+                    time = 0;
+            else if (rootsLength == 1)
+                    time = r0;
+            else  
+            {
+
+
+                for (var i = 0; i < rootsLength; ++i )
+                {
+                    var root = i == 0 ? r0 : i == 1 ? r1 : r2;
+                    if (0 <= root && root <= 1)
+                    {
+                        time = root;
+                        break;
+                    }
+                }
+            }
+                
+            return Double.IsNaN(time) ? Double.NaN : GetSingleValue(time, ay, by, cy, dy);
+        }
+               
+    }
+
     public class Evaluator
     {
-        private const string _source = @"import System;
+        private const string Functions = @"
+const double PI = Math.PI;
+const double E = Math.E;
+const double pi = Math.PI;
+const double e = Math.E;
+double lerp(double a, double b, double c) { return (b - a) * c + a; }
+double avg(double a, double b) { return (b - a) * 0.5 + a; }
+double pow(double x, double n) { return Math.Pow(x, n); }
+double abs(double x) { return Math.Abs(x); }
+double acos(double x) { return Math.Acos(x); }
+double asin(double x) { return Math.Asin(x); }
+double atan(double x) { return Math.Atan(x); }
+double atan2(double x, double y) { return Math.Atan2(x, y); }
+double sin(double x) { return Math.Sin(x); }
+double sinh(double x) { return Math.Sinh(x); }
+double cos(double x) { return Math.Cos(x); }
+double cosh(double x) { return Math.Cosh(x); }
+double tan(double x) { return Math.Tan(x); }
+double tanh(double x) { return Math.Tanh(x); }
+double sqrt(double x) { return Math.Sqrt(x); }
+double sign(double x) { return Math.Sign(x); }
+double max(double x, double y) { return Math.Max(x, y); }
+double min(double x, double y) { return Math.Min(x, y); }
+double exp(double x) { return Math.Exp(x); }
+double floor(double x) { return Math.Floor(x); }
+double ceiling(double x) { return Math.Ceiling(x); }
+double round(double x) { return Math.Round(x); }
+double log(double x) { return Math.Log(x); }
+double log(double x, double y) { return Math.Log(x, y); }
+double log10(double x) { return Math.Log10(x); }
+double bezier(double x, double bx, double by, double cx, double cy) { return f.Bezier(x, bx, by, cx, cy); }
+double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return f.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
 
-                class Eval
-                {
-                    public function ifNotNan(a : double, b : double) { return double.IsNaN(a) ? b : a; }
-                    public function ifElse(condition : boolean, ifTrue : double, ifFalse : double) { return condition ? ifTrue : ifFalse; }
-                    public function lerp(a : double, b : double, c : double) { return (b - a) * c + a; }
-                    public function avg(a : double, b : double) { return (b - a) * 0.5 + a; }
-                    public function pow(x : double, n : double) { return System.Math.Pow(x, n); }
-                    public function abs(x : double) { return System.Math.Abs(x); }
-                    public function acos(x : double) { return System.Math.Acos(x); }
-                    public function asin(x : double) { return System.Math.Asin(x); }
-                    public function atan(x : double) { return System.Math.Atan(x); }
-                    public function atan2(x : double, y : double) { return System.Math.Atan2(x, y); }
-                    public function sin(x : double) { return System.Math.Sin(x); }
-                    public function sinh(x : double) { return System.Math.Sinh(x); }
-                    public function cos(x : double) { return System.Math.Cos(x); }
-                    public function cosh(x : double) { return System.Math.Cosh(x); }
-                    public function tan(x : double) { return System.Math.Tan(x); }
-                    public function tanh(x : double) { return System.Math.Tanh(x); }
-                    public function sqrt(x : double) { return System.Math.Sqrt(x); }
-                    public function sign(x : double) { return System.Math.Sign(x); }
-                    public function max(x : double, y : double) { return System.Math.Max(x, y); }
-                    public function min(x : double, y : double) { return System.Math.Min(x, y); }
-                    public function exp(x : double) { return System.Math.Exp(x); }
-                    public function floor(x : double) { return System.Math.Floor(x); }
-                    public function ceiling(x : double) { return System.Math.Ceiling(x); }
-                    public function round(x : double) { return System.Math.Round(x); }
-                    public function log(x : double) { return System.Math.Log(x); }
-                    public function log(x : double, y : double) { return System.Math.Log(x, y); }
-                    public function log10(x : double) { return System.Math.Log10(x); }
+double Lerp(double a, double b, double c) { return lerp(a, b, c); }
+double Avg(double a, double b) { return avg(a,b); }
+double Pow(double x, double n) { return pow(x, n); }
+double Abs(double x) { return abs(x); }
+double Acos(double x) { return acos(x); }
+double Asin(double x) { return asin(x); }
+double Atan(double x) { return atan(x); }
+double Atan2(double x, double y) { return atan2(x, y); }
+double Sin(double x) { return sin(x); }
+double Sinh(double x) { return sinh(x); }
+double Cos(double x) { return cos(x); }
+double Cosh(double x) { return cosh(x); }
+double Tan(double x) { return tan(x); }
+double Tanh(double x) { return tanh(x); }
+double Sqrt(double x) { return sqrt(x); }
+double Sign(double x) { return sign(x); }
+double Max(double x, double y) { return max(x, y); }
+double Min(double x, double y) { return min(x, y); }
+double Exp(double x) { return exp(x); }
+double Floor(double x) { return floor(x); }
+double Ceiling(double x) { return ceiling(x); }
+double Round(double x) { return round(x); }
+double Log(double x) { return log(x); }
+double Log(double x, double y) { return log(x, y); }
+double Log10(double x) { return log10(x); }
+double Bezier(double x, double bx, double by, double cx, double cy) { return f.Bezier(x, bx, by, cx, cy); }
+double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return f.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
+                ";
 
-                    public function IfNotNan(a : double, b : double) { return ifNotNan(a, b); }
-                    public function IfElse(condition : boolean, ifTrue : double, ifFalse : double) { return ifElse(condition, ifTrue, ifFalse); }
-                    public function Lerp(a : double, b : double, c : double) { return lerp(a, b, c); }
-                    public function Avg(a : double, b : double) { return avg(a,b); }
-                    public function Pow(x : double, n : double) { return pow(x, n); }
-                    public function Abs(x : double) { return abs(x); }
-                    public function Acos(x : double) { return acos(x); }
-                    public function Asin(x : double) { return asin(x); }
-                    public function Atan(x : double) { return atan(x); }
-                    public function Atan2(x : double, y : double) { return atan2(x, y); }
-                    public function Sin(x : double) { return sin(x); }
-                    public function Sinh(x : double) { return sinh(x); }
-                    public function Cos(x : double) { return cos(x); }
-                    public function Cosh(x : double) { return cosh(x); }
-                    public function Tan(x : double) { return tan(x); }
-                    public function Tanh(x : double) { return tanh(x); }
-                    public function Sqrt(x : double) { return sqrt(x); }
-                    public function Sign(x : double) { return sign(x); }
-                    public function Max(x : double, y : double) { return max(x, y); }
-                    public function Min(x : double, y : double) { return min(x, y); }
-                    public function Exp(x : double) { return exp(x); }
-                    public function Floor(x : double) { return floor(x); }
-                    public function Ceiling(x : double) { return ceiling(x); }
-                    public function Round(x : double) { return round(x); }
-                    public function Log(x : double) { return log(x); }
-                    public function Log(x : double, y : double) { return log(x, y); }
-                    public function Log10(x : double) { return log10(x); }
 
-                    public function EvaluateCode(code : String, x : double) : double
-                    {
-                        var E : double = System.Math.E;
-                        var e : double = System.Math.E;
-                        var PI : double = System.Math.PI;
-                        var pi : double = System.Math.PI;
-                        return eval(code);
-                    }
-                }";
-
-        private delegate double EvaluatorFunc(string code, double x);
-        private static EvaluatorFunc _evaluatorFunc;
 
         public Evaluator()
         {
             SetUp();
         }
 
+        private Session _session;
         private void SetUp()
         {
-            var cp = new CompilerParameters { GenerateInMemory = true, GenerateExecutable = false };
-            foreach (var assembly in AppDomain.CurrentDomain
-                .GetAssemblies()
-                .Where(assembly =>
-                        !assembly.IsDynamic &&
-                        System.IO.File.Exists(assembly.Location)))
-            {
-                cp.ReferencedAssemblies.Add(assembly.Location);
-            }
+            var scriptEngine = new ScriptEngine();
+            _session = scriptEngine.CreateSession();
+            _session.AddReference("System");
+            _session.AddReference("System.Core");
+            _session.AddReference(this.GetType().Assembly);
 
-            var compilerResult = 
-                new Microsoft.JScript.JScriptCodeProvider()
-                .CompileAssemblyFromSource(cp, _source);
+            _session.ImportNamespace("System");
+            _session.ImportNamespace("GrapherApp.UI");
 
-            if(compilerResult.Errors.Count > 0)
-            {
-                throw new InvalidOperationException("JavaScript evaluator error: "+String.Join("|", compilerResult.Errors.Cast<CompilerError>().Select(err => err.FileName + ":" + err.ErrorText).ToArray()));
-            }
-            
-            var evalType =
-                compilerResult
-                    .CompiledAssembly
-                    .GetType("Eval");
-
-            _evaluatorFunc =
-                Delegate.CreateDelegate(
-                        typeof(EvaluatorFunc),
-                        Activator.CreateInstance(evalType), "EvaluateCode") as EvaluatorFunc;
+            _session.Execute(Functions);
         }
 
-        public double Evaluate(string code, double x, out string error)
+        public Func<double,double> GetFunction(string source)
         {
-            try
-            {
-                code = code.Trim();
-
-                code =
-                    new StringBuilder(code)
-                        .Replace("Math.", "")
-                        .Replace("0f", "0")
-                        .Replace("1f", "1")
-                        .Replace("2f", "2")
-                        .Replace("3f", "3")
-                        .Replace("4f", "4")
-                        .Replace("5f", "5")
-                        .Replace("6f", "6")
-                        .Replace("7f", "7")
-                        .Replace("8f", "8")
-                        .Replace("9f", "9")
-                        .Replace("return ", "")
-                        .Replace("const ", "")
-                        .Replace("double ", "var ")
-                        .Replace("float ", "var ")
-                        .Replace("(float)", "")
-                        .ToString();
-
-                error = null;
-                return _evaluatorFunc(code, x);
-            }
-            catch(Exception ex)
-            {
-                error = ex.Message;
-
-                return Double.NaN;
-            }
+            source = source.Trim();
+            var lines = source.Split('\n');
+            var lastLine = lines[lines.Length - 1].Trim();
+            if (source.IndexOf("return", StringComparison.InvariantCulture) < 0)
+                lines[lines.Length - 1] = "return " + lines[lines.Length - 1];
+            if (!lastLine.EndsWith(";"))
+                lines[lines.Length - 1] = lines[lines.Length - 1] + ";";
+            source = String.Join("\n", lines);
+            return _session.Execute<Func<double, double>>(@"
+                Func<double, double> factory() { 
+                    return x => { "+source+@" }; 
+                 } 
+                 factory();");
         }
-
     }
 }

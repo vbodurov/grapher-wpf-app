@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,6 +16,9 @@ namespace GrapherApp.UI
     public partial class MainWindow : Window
     {
         private readonly ScaleTransform _scale;
+        private readonly BackgroundWorker _worker;
+        private Evaluator _evaluator;
+
 
         public MainWindow()
         {
@@ -30,6 +34,28 @@ namespace GrapherApp.UI
             MouseWheel += TheCanvas_MouseWheel;
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             this.Title = "Grapher " + version.Major + "." + version.Minor;
+
+            _worker = new BackgroundWorker();
+            _worker.DoWork += (sender, args) =>
+                {
+                    try
+                    {
+                        _evaluator = new Evaluator();
+                    }
+                    catch (Exception ex)
+                    {
+                        args.Result = ex + "";
+                    }
+                };
+            _worker.RunWorkerCompleted += (sender, args) =>
+                {
+                    if (args.Result != null)
+                    {
+                        MessageBox.Show(args.Result+"");
+                        Close();
+                    }
+                };
+            _worker.RunWorkerAsync();
 
             try
             {
@@ -64,10 +90,12 @@ namespace GrapherApp.UI
         
         private readonly List<Line> _lines = new List<Line>(); 
 
-        private readonly Evaluator _evaluator;
+        
         private void DrawGraphFromSource(Color color, string source)
         {
+            if(_evaluator == null) return;
 
+            var func = _evaluator.GetFunction(source);
             
 
             var x2 = Double.NaN;
@@ -77,26 +105,18 @@ namespace GrapherApp.UI
             for (var i = -edge; i <= edge; i += 0.005)
             {
                 double x1 = i;
-                string error = null;
                 double y1;
                 try
                 {
-                    y1 = _evaluator.Evaluate(source, x1, out error);
+                    y1 = func(x1);
                 }
                 catch(Exception ex)
                 {
-                    AddErrorMessage(error);
+                    AddErrorMessage(ex.Message);
                     break;
                 }
                 if (Double.IsNaN(y1) || Double.IsInfinity(y1))
                 {
-                    if (error != null)
-                    {
-                        AddErrorMessage(error);
-                        break;
-                    }
-
-                    //MessageBox.Show("NaN");
                     continue;
                 }
 
@@ -222,46 +242,10 @@ namespace GrapherApp.UI
         private void DrawIfHasCode(Color color, TextBox sourceCode)
         {
             var code = sourceCode.Text.Trim();
-//            if (code.StartsWith("TST")) { RunTestCode(color, Int32.Parse(code.Replace("TST", ""))); return; }
 
             if (code != "") DrawGraphFromSource(color, sourceCode.Text);
         }
 
 
-//        #region Test Code
-//        private void RunTestCode(Color color, int n)
-//        {
-//            var px = Double.NaN;
-//            var py = Double.NaN;
-//            for (var x = -1.0; x < 1.0; x += 0.01) // for each frame
-//            {
-//
-//                var y = OnEachFrame(n);
-//
-//                if (!Double.IsNaN(px))
-//                {
-//                    AddLine(px, py, x, y, color);
-//                }
-//                px = x;
-//                py = y;
-//            }
-//        }
-//
-//
-//        private const double _c_max_move = 0.01;
-//
-//        private double _m_move;
-//        private double OnEachFrame(int n)
-//        {
-//            var requestedSpeed = n/10.0;
-//            var x = _m_move / (Math.Abs(requestedSpeed - 0) < 0.0000001 ? 0.0000001 : requestedSpeed);
-//            var p = Math.Pow(5, -(Math.Pow((x - 0.5), 2) / Math.Pow(0.76, 2)))*2-1;
-//    
-//            _m_move += _c_max_move*p;
-//
-//            return (_m_move <= 0) ? 0 : _m_move;
-//        }
-//
-//        #endregion
     }
 }
