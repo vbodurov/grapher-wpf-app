@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Roslyn.Scripting;
 using Roslyn.Scripting.CSharp;
 
@@ -136,6 +137,9 @@ namespace GrapherApp.UI
                 
             return Double.IsNaN(time) ? Double.NaN : GetSingleValue(time, ay, by, cy, dy);
         }
+
+        public static readonly Dictionary<string, double> state = 
+            new Dictionary<string, double>(StringComparer.InvariantCultureIgnoreCase);
                
     }
 
