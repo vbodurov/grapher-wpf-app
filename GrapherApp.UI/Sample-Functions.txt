@@ -53,7 +53,19 @@ var avg = 0.5f;
 return (
 	1f / (Math.Sqrt(2 * Math.PI)*sd)) * 
 	Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2)
-) * (2.5066282746310002 * sd) ;
+) * (Math.Sqrt(2 * Math.PI) * sd) ;
+
+OR
+
+var sd = 0.1f;
+var avg = 0.5f;
+var sqrtOf2xPI = 2.5066282746310002;
+return (
+	1f / (sqrtOf2xPI * sd)) * 
+	Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2)
+) * (sqrtOf2xPI * sd) ;
+
+
 
 
 Math.Pow(5, -(Math.Pow((x - HOR_SHIFT), 2) / Math.Pow(1 / STAND_DEV, 2)))
