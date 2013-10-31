@@ -37,6 +37,24 @@ ex:
 ----------------------------------------------------------------------------
 bell curve
 ..........
+ORIGINAL:
+
+var sd = 0.4f;
+var avg = 0f;
+return (
+	1f / (Math.Sqrt(2 * Math.PI)*sd)) * 
+	Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2)
+);
+
+NORMALIZED:
+
+var sd = 0.1f;
+var avg = 0.5f;
+return (
+	1f / (Math.Sqrt(2 * Math.PI)*sd)) * 
+	Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2)
+) * (2.5066282746310002 * sd) ;
+
 
 Math.Pow(5, -(Math.Pow((x - HOR_SHIFT), 2) / Math.Pow(1 / STAND_DEV, 2)))
 Math.Pow(5, -(Math.Pow((x - 0.5), 2) / Math.Pow(1 / 4.0, 2))); // x = 0.5 is on TOP
