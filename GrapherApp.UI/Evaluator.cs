@@ -140,6 +140,11 @@ namespace GrapherApp.UI
 
         public static readonly Dictionary<string, double> state = 
             new Dictionary<string, double>(StringComparer.InvariantCultureIgnoreCase);
+
+        public static void InitState(string name, double val)
+        {
+            if (!state.ContainsKey(name)) state[name] = val;
+        }
                
     }
 
