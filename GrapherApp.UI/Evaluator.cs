@@ -144,6 +144,7 @@ namespace GrapherApp.UI
         public static void InitState(string name, double val)
         {
             if (!state.ContainsKey(name)) state[name] = val;
+            state[name] = val;
         }
                
     }
@@ -230,6 +231,8 @@ double Bezier(double x, double ax, double ay, double bx, double by, double cx, d
 
             _session.ImportNamespace("System");
             _session.ImportNamespace("GrapherApp.UI");
+
+            f.state.Clear();
 
             _session.Execute(Functions);
         }
