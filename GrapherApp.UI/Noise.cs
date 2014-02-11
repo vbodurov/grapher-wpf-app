@@ -2,6 +2,11 @@
 {
     public class Noise
     {
+        public static float Generate(double x)
+        {
+            return Generate((float)x);
+        }
+
         /// <summary>
         /// 1D simplex noise
         /// </summary>
