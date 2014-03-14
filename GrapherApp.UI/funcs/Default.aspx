@@ -4,36 +4,90 @@
 
 <html>
   <head>
-    <title><%=Server.MapPath(".")%></title>
+    <title>funcs</title>
+    <style>
+    .tile{
+      margin:20px;
+      float:left;
+      width:590px;
+      height:610px;
+      font-family:sans-serif;
+    }
+    .tile h4{
+      margin:3px;
+    }
+    .tile textarea{
+      width:580px;
+      height:30px;
+    }
+    </style>
   </head>
-  <body MS_POSITIONING="GridLayout">
+  <body>
 	
     <%
     
-    string strFile = Server.MapPath(@".")+"/"+Request["f"];
-    if(strFile!=null && File.Exists(strFile)){
-		/*FileStream fs = File.Open(strFile, FileMode.Open);
-		
-		try{
-			Response.ClearContent();
-			Response.ContentType = @"application/x-www-form-urlencoded";
-			byte[] buffer = new byte[1024];
-			int offset = 0;
-			int count = 1024;
-			offset = fs.Read( buffer, offset, count );
-			Response.BinaryWrite( buffer );
-			while(offset>0){	
-				offset = fs.Read( buffer, offset, count );
-				Response.BinaryWrite( buffer );
-			}
-			Response.Flush();
-		}catch{}
-		fs.Close();
-		Response.End();*/
-		Response.Redirect(Request["f"]);
-    }
+    var dict = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase){
+      {"f01", "pow(sin(x*PI), sin(x*PI))"},
+      {"f02", "pow(sin(x*PI), atan(x*PI))"},
+      {"f03", "pow(sin(x*PI), 3)"},
+      {"f04", "pow(sin(x*PI), 4)"},
+      {"f05", @"NORMALIZED:
+var sd = 0.2f;
+var avg = 0.5f;
+return Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2));
+
+ORIGINAL:
+
+var sd = 0.4f;
+var avg = 0f;
+return (
+	1f / (Math.Sqrt(2 * Math.PI)*sd)) * 
+	Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2)
+);"},
+      {"f06", @"pow(abs(x*e), e) * pow(e, -abs(x*e))
+-pow(abs(x*e), e) * pow(e, -abs(x*e)) + 1"},
+      {"f07", "pow(sin(x*PI), 1/sin(x*PI))"},
+      {"f08", @"(pow(x, 0.3) + (1 - pow(1 - x, 1/0.3))) / 2
+(pow(x, COEF) + (1 - pow(1 - x, 1/COEF))) / 2
+COEF => 0 - 1
+
+(pow(x, 3.0) + (1 - pow(1 - x, 1/3.0))) / 2
+(pow(x, COEF) + (1 - pow(1 - x, 1/COEF))) / 2
+COEF => 1 - MAX
+"},
+      {"f09", @"sin(x * PI * 2) / (2 + x) + 0.5
+-sin(x * PI * (1/x)*0.5) / (2 + x) + 0.5
+sin(x * PI * (1/x)*0.5) / (2 + x) + 0.5"},
+      {"f10", @"pow(abs(x), 0.05/pow(abs(x),2)) * sign(x)
+pow(abs(x), CURVETURE/pow(abs(x),HOW_WIDE_IS_THE_BASE)) * sign(x)"},
+      {"f11", @"var d = 4.5;
+pow(abs(x)*e*d, e) * pow(e, -abs(x)*e*d)
+pow(abs(x), pow(e, pow(abs(x), 2)))"},
+      {"f12", @"var coef = 3.0;
+-pow(2, coef) * pow(abs(x - 0.5), coef) + 1"},
+      {"f13", @"elastic in out:
+(71.25 * (x * (x * x)) * (x * x) + -176.5 * (x * x) * (x * x) + 145.5 * (x * (x * x)) + -43 * (x * x) + 3.75 * x);
+
+elastic in:
+(33 * (x * (x * x)) * (x * x) + -59*(x * x) * (x * x) + 32 * (x * (x * x)) + -5 * (x * x))
+
+elastic out
+(33 * (x * (x * x)) * (x * x) + -106*(x * x) * (x * x) + 126 * (x * (x * x)) + -67 * (x * x) + 15 * x)"},
+      {"f14", "pow(5, -(pow((x - 0.842351), 2) / pow((2 * 0.234197), 2))) * 1.2"},
+      {"f15", @"sign(x)*-pow(abs(x), 2.9)
+sign(x)*-pow(abs(x), 1/2.9)
+-x"},
+      {"f16", @"sign(x)*pow(abs(x), 2.9)
+sign(x)*pow(abs(x), 1/2.9)
+x"},
+      {"f17", @"(sin(pow(abs(x), 1.5) * PI - PI / 2) * 0.5f + 0.5f) * sign(x)"},
+      {"f18", @"return max(
+	pow(abs(x-1)*e*5, e) * pow(e, -abs(x-1)*e*5), 
+	pow(sin(x*PI-PI/2),51)
+);"}
+    };
     
-    
+    var img = 0;
 		string path = Server.MapPath(@".")+"/";
 		DirectoryInfo di = new DirectoryInfo(path);
 		FileInfo[] fileInfo = di.GetFiles();
@@ -41,26 +95,26 @@
       var name = fileInfo[i].Name.ToLower();
 			if(name =="default.aspx") continue;
 			if(name.EndsWith(".png") || name.EndsWith(".jpg")){
-          Response.Write( String.Format( "<img src='{0}'/>", fileInfo[i].Name ) );
-          Response.Write( "<br/>" );
+          
+          var key = name.Replace(".png", "").Replace(".jpg", "");
+        
+          string funcText = "";
+          string s;
+          if(dict.TryGetValue(key, out s)){
+            funcText = s.Replace("<","&lt;").Replace(">","&gt;");
+          }
+        
+          ++img;
+          Response.Write( String.Format( "<div class='tile'><a name='graph-"+img+"'></a>"+
+          "<h4>graph "+img+"</h4><img src='{0}'/><textarea>"+funcText+"</textarea></div>", fileInfo[i].Name ) );
           continue;
 			}
-			Response.Write( String.Format( "<a href='Default.aspx?f={0}'>", fileInfo[i].Name ) );
-			Response.Write( fileInfo[i].Name );
-			Response.Write( "</a><br>" );
 		}
-		DirectoryInfo[] dirInfo = di.GetDirectories();
-		for(int i=0;i<dirInfo.Length;i++){
-			Response.Write( String.Format( "<a href='{0}'>",dirInfo[i].Name ) );
-			Response.Write( "<font color=green>" );
-			Response.Write( String.Concat("DIR ", dirInfo[i].Name ) );
-			Response.Write( "</font>" );
-			Response.Write( "</a><br><br>" );
-		}
-	
+
     
     
     %>
+    <div style="float:left;width:100px;height:100px"></div>
 	
   </body>
 </html>
