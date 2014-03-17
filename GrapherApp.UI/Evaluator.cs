@@ -173,7 +173,15 @@ double tanh(double x) { return Math.Tanh(x); }
 double sqrt(double x) { return Math.Sqrt(x); }
 double sign(double x) { return Math.Sign(x); }
 double max(double x, double y) { return Math.Max(x, y); }
+double max(double a, double b, double c) { return Math.Max(Math.Max(a, b), c); }
+double max(double a, double b, double c, double d) { return Math.Max(Math.Max(Math.Max(a, b), c), d); }
+double max(double a, double b, double c, double d, double e) { return Math.Max(Math.Max(Math.Max(Math.Max(a, b), c), d), e); }
+double max(double a, double b, double c, double d, double e, double f) { return Math.Max(Math.Max(Math.Max(Math.Max(Math.Max(a, b), c), d), e), f); }
 double min(double x, double y) { return Math.Min(x, y); }
+double min(double a, double b, double c) { return Math.Min(Math.Min(a, b), c); }
+double min(double a, double b, double c, double d) { return Math.Min(Math.Min(Math.Min(a, b), c), d); }
+double min(double a, double b, double c, double d, double e) { return Math.Min(Math.Min(Math.Min(Math.Min(a, b), c), d), e); }
+double min(double a, double b, double c, double d, double e, double f) { return Math.Min(Math.Min(Math.Min(Math.Min(Math.Min(a, b), c), d), e), f); }
 double exp(double x) { return Math.Exp(x); }
 double floor(double x) { return Math.Floor(x); }
 double ceiling(double x) { return Math.Ceiling(x); }
