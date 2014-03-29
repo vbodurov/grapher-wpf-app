@@ -82,9 +82,13 @@ sign(x)*pow(abs(x), 1/2.9)
 x"},
       {"f17", @"(sin(pow(abs(x), 1.5) * PI - PI / 2) * 0.5f + 0.5f) * sign(x)"},
       {"f18", @"return max(
-	pow(abs(x-1)*e*5, e) * pow(e, -abs(x-1)*e*5), 
-	pow(sin(x*PI-PI/2),51)
-);"}
+pow(abs(x-1)*e*5, e) * pow(e, -abs(x-1)*e*5), 
+pow(sin(x*PI-PI/2),51)
+);"},
+      {"f19", @"pow(sin(   pow(x, 2)   *PI), 4);
+pow(sin(x*PI), 4);
+pow(sin(   (-pow(abs(x-1), 2)+1)    *PI), 4);
+      "}
     };
     
     var img = 0;

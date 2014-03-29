@@ -249,12 +249,28 @@ double Bezier(double x, double ax, double ay, double bx, double by, double cx, d
         {
             source = source.Trim();
             var lines = source.Split('\n');
-            var lastLine = lines[lines.Length - 1].Trim();
-            if (source.IndexOf("return", StringComparison.InvariantCulture) < 0)
-                lines[lines.Length - 1] = "return " + lines[lines.Length - 1];
+            var lastLineIndex = lines.Length - 1;
+
+            var firstLine = lines[0].Trim();
+            var lastLine = lines[lastLineIndex].Trim();
+            var lastLineIsBracket = (lastLine == ")" || lastLine == ");");
+            var sourceHasNoReturnWord = source.IndexOf("return", StringComparison.InvariantCulture) < 0;
+            if (lastLineIsBracket && !firstLine.StartsWith("var ") && sourceHasNoReturnWord)
+            {
+                lines[0] = "return " + firstLine;
+                sourceHasNoReturnWord = false;
+            }
+            if (sourceHasNoReturnWord && !lastLineIsBracket)
+                lines[lastLineIndex] = "return " + lastLine;
             if (!lastLine.EndsWith(";"))
-                lines[lines.Length - 1] = lines[lines.Length - 1] + ";";
+                lines[lastLineIndex] = lines[lastLineIndex] + ";";
             source = String.Join("\n", lines);
+
+            sourceHasNoReturnWord = source.IndexOf("return", StringComparison.InvariantCulture) < 0;
+            if(sourceHasNoReturnWord)
+            {
+                throw new ArgumentException("Missing word 'return' - cannot infer where to put the 'return' statement. Please add 'return' word manually.");
+            }
             return _session.Execute<Func<double, double>>(@"
                 Func<double, double> factory() { 
                     return x => { "+source+@" }; 
