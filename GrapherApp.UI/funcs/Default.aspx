@@ -88,6 +88,15 @@ pow(sin(x*PI-PI/2),51)
       {"f19", @"pow(sin(   pow(x, 2)   *PI), 4);
 pow(sin(x*PI), 4);
 pow(sin(   (-pow(abs(x-1), 2)+1)    *PI), 4);
+bell like shifted:
+
+var shift = -1.5;
+var power = 2;
+return pow(abs(sin((shift > 1 ? pow(x, shift) : shift < -1 ? (-pow(abs(x-1), shift*-1)+1) : x) * PI)), power);
+
+where power = [1 to MAX]
+      shift = [-MAX to -1] for left shift OR [1 to MAX] for right shift
+
       "}
     };
     
