@@ -97,7 +97,9 @@ return pow(abs(sin((shift > 1 ? pow(x, shift) : shift < -1 ? (-pow(abs(x-1), shi
 where power = [1 to MAX]
       shift = [-MAX to -1] for left shift OR [1 to MAX] for right shift
 
-      "}
+      "},
+      {"f20", @"var curv = 1.2f;
+return pow(abs(x-0.5), curv) * pow(2, curv);"}
     };
     
     var img = 0;
