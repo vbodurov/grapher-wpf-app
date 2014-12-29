@@ -10,7 +10,6 @@
       margin:20px;
       float:left;
       width:590px;
-      height:610px;
       font-family:sans-serif;
     }
     .tile h4{
@@ -102,7 +101,20 @@ where power = [1 to MAX]
 return pow(abs(x-0.5), curv) * pow(2, curv);"},
       {"f21", @"sqrt(1 - x*x)
       
--sqrt(1 - x*x)"}, 
+-sqrt(1 - x*x)
+
+-----------------------------
+
+var radius = 0.2f;
+var centerY = 0.5f;
+var centerX = 0.5f;
+return sqrt(radius*radius - (x-centerX )*(x-centerX ))+centerY;
+
+-----------------------------
+var radius = 0.2f;
+var centerY = 0.5f;
+var centerX = 0.5f;
+return -sqrt(radius*radius - (x-centerX )*(x-centerX ))+centerY;"}, 
       {"f22", @"sin(x*PI)*sign(x)
 sin((x + 0.2*sign(x))*PI)*sign(x)
 sin((x - 0.2*sign(x))*PI)*sign(x)"},
@@ -146,7 +158,14 @@ return sqrt(
 		string path = Server.MapPath(@".")+"/";
 		DirectoryInfo di = new DirectoryInfo(path);
 		FileInfo[] fileInfo = di.GetFiles();
-		for(int i=0;i<fileInfo.Length;i++){
+		
+		var cells = new List<string>();
+		
+		for(var i=0;i<fileInfo.Length;i++){
+		
+
+		
+		
       var name = fileInfo[i].Name.ToLower();
 			if(name =="default.aspx") continue;
 			if(name.EndsWith(".png") || name.EndsWith(".jpg")){
@@ -160,16 +179,29 @@ return sqrt(
           }
         
           ++img;
-          Response.Write( String.Format( "<div class='tile'><a name='graph-"+img+"'></a>"+
+          cells.Add( String.Format( "<div class='tile'><a name='graph-"+img+"'></a>"+
           "<h4>graph "+img+"</h4><img src='{0}'/><textarea>"+funcText+"</textarea></div>", fileInfo[i].Name ) );
           continue;
 			}
 		}
+		
+		var table = new StringBuilder();
+		
+		table.Append("<table cellpadding=\"0\" cellspacing=\"0\">");
+		for(var i=0;i < cells.Count;i+=2){
+      table.Append("<tr>");
+      table.Append("<td valign=\"top\">"+cells[i]+"</td>");
+      table.Append("<td valign=\"top\">"+(cells.Count > (i+1) ? cells[i+1] : "")+"</td>");
+      table.Append("</tr>");
+		}
+		table.Append("</table>");
+		
+		Response.Write( table );
 
     
     
     %>
-    <div style="float:left;width:100px;height:100px"></div>
+    
 	
   </body>
 </html>
