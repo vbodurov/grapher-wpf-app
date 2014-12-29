@@ -99,7 +99,47 @@ where power = [1 to MAX]
 
       "},
       {"f20", @"var curv = 1.2f;
-return pow(abs(x-0.5), curv) * pow(2, curv);"}
+return pow(abs(x-0.5), curv) * pow(2, curv);"},
+      {"f21", @"sqrt(1 - x*x)
+      
+-sqrt(1 - x*x)"}, 
+      {"f22", @"sin(x*PI)*sign(x)
+sin((x + 0.2*sign(x))*PI)*sign(x)
+sin((x - 0.2*sign(x))*PI)*sign(x)"},
+      {"f23", @"sin(x * PI*16 )*sqrt(1 - x*x)
+sqrt(1 - x*x)"},
+      {"f24", @"var sd = 0.2f;
+var avg = 0.5f;
+return Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2))*sin(x * PI*16 );
+
+var sd = 0.2f;
+var avg = 0.5f;
+return Math.Pow(Math.E, -0.5 * Math.Pow((x - avg)/sd, 2));"},
+      {"f25", @"abs(sin(x*PI)*sin(x * PI*8 ))
+abs(sin(x*PI))"},
+      {"f26", @"(sin(x*PI)*0.5+0.5) * (sin(x * PI*8 )*0.5 + 0.5)
+abs(sin(x*PI)*0.5 + 0.5)
+
+(sin(x*PI*2-PI*0.5)*0.5+0.5) * (sin(x * PI*8 )*0.5 + 0.5)
+abs(sin(x*PI*2-PI*0.5)*0.5 + 0.5)"},
+      {"f27", @"max(sign(x-1), sqrt(max(1 - pow(x-1, 2.0), 0)))
+-----------
+max(max(sign(x-1), 0), 1-pow(x-1, 2))
+-----------  
+-cos(x*PI)*0.5f+0.5f
+-----------
+var sd = 0.2f;
+var avg = 1f;
+return round(pow(E, -0.5 * pow((x - avg)/sd, 2))*10000f)/10000f;
+"},
+      {"f28", @"var flatness = 2;
+var period = x * PI;
+return sqrt(
+	(1 + flatness * flatness)
+ 	/
+ 	(1 + flatness * flatness * cos(period)*cos(period))
+) * cos(period)
+"}
     };
     
     var img = 0;
