@@ -5,5 +5,9 @@ WPF App for viewing graphs of a function.
 
 Install binaries from:
 
-www.youvisio.com/grapher.2/GrapherApp.UI.application
+www.youvisio.com/grapher/GrapherApp.UI.application
+
+Some common functions:
+
+http://www.bodurov.com/funcs/
 
