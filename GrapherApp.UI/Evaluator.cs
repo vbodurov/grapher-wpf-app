@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Roslyn.Scripting;
 using Roslyn.Scripting.CSharp;
 
@@ -221,21 +222,26 @@ double Bezier(double x, double bx, double by, double cx, double cy) { return f.B
 double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return f.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
                 ";
 
-
+        private readonly BackgroundWorker _backgroundWorker = new BackgroundWorker();
 
         public Evaluator()
         {
-            SetUp();
+            _backgroundWorker.DoWork += (sender, args) => SetUp();
+            _backgroundWorker.RunWorkerCompleted += (sender, args) => IsInitialized = true;
+            _backgroundWorker.RunWorkerAsync();
         }
 
         private Session _session;
+
+        public bool IsInitialized { get; private set; }
+
         private void SetUp()
         {
             var scriptEngine = new ScriptEngine();
             _session = scriptEngine.CreateSession();
             _session.AddReference("System");
             _session.AddReference("System.Core");
-            _session.AddReference(this.GetType().Assembly);
+            _session.AddReference(GetType().Assembly);
 
             _session.ImportNamespace("System");
             _session.ImportNamespace("GrapherApp.UI");

@@ -57,11 +57,12 @@
 
 
                 <Border Grid.Row="6" Grid.Column="0" Background="Purple"></Border>
-                <TextBox Grid.Row="6" Grid.Column="1" Name="SourceCode4" AcceptsReturn="True" AcceptsTab="True" />
+                <TextBox Grid.Row="6" Grid.Column="1" Name="SourceCode4" AcceptsReturn="False" AcceptsTab="False" />
+
             </Grid>
         </ScrollViewer>
 
-        <Border Grid.Row="3" BorderThickness="1" BorderBrush="Gray">
+        <Border Grid.Row="4" BorderThickness="1" BorderBrush="Gray">
             <TextBlock Name="Message" Foreground="Red" Background="AliceBlue"></TextBlock>
         </Border>
         

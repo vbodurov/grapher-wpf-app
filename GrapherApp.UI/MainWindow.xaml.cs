@@ -93,7 +93,7 @@ namespace GrapherApp.UI
         
         private void DrawGraphFromSource(Color color, string source)
         {
-            if(_evaluator == null) return;
+            if(_evaluator == null || !_evaluator.IsInitialized) return;
 
             var func = _evaluator.GetFunction(source);
             
