@@ -102,7 +102,7 @@ namespace GrapherApp.UI
             var y2 = Double.NaN;
 
             const double edge = 8.0;
-            for (var i = -edge; i <= edge; i += 0.005)
+            for (var i = -edge; i <= edge; i += 0.0005)
             {
                 double x1 = i;
                 double y1;
