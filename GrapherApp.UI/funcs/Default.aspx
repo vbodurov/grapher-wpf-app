@@ -151,6 +151,16 @@ return sqrt(
  	/
  	(1 + flatness * flatness * cos(period)*cos(period))
 ) * cos(period)
+"},
+      {"f29", @"var n = 3;
+
+return min(x, (n-1)-x)/((n-1)/2f);
+"},
+      {"f30", @"1-pow(x  + (1 - pow(x, sin(x))) - 0.5,2)*4
+
+(1-pow(x, sin(x)))*3.3
+
+1 - pow(x  + sin(x*PI)*0.3 - 0.5,2)*4
 "}
     };
     
