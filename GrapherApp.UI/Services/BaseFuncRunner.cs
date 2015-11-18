@@ -48,6 +48,29 @@ namespace GrapherApp.UI.Services
         protected double bezier(double x, double bx, double by, double cx, double cy) { return SpecFuncs.Bezier(x, bx, by, cx, cy); }
         protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return SpecFuncs.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
 
+        //bezier2(x,true,0.4,0.8,.17,.67,.63,.97,.17,.67,.58,-0.02)
+//        protected double bezier2(double x,
+//            bool isFirstForward,
+//            double firstEndX,
+//            double firstEndY,
+//            double bx1, double by1, double cx1, double cy1,
+//            double bx2, double by2, double cx2, double cy2)
+//        {
+//            if (x <= firstEndX && firstEndX > 0.0000001)
+//            {
+//                x = x/firstEndX;
+//
+//                if (!isFirstForward) x = 1 - x;
+//
+//                return bezier(x, bx1, by1, cx1, cy1) * firstEndY;
+//            }
+//
+//            x = x / (1-firstEndX);
+//
+//            return bezier(x, bx1, by1, cx1, cy1) * firstEndY;
+//        }
+
+
         protected double Lerp(double a, double b, double c) { return lerp(a, b, c); }
         protected double Avg(double a, double b) { return avg(a, b); }
         protected double Pow(double x, double n) { return pow(x, n); }
