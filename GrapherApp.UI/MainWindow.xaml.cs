@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using GrapherApp.UI.Services;
 
 namespace GrapherApp.UI
 {
@@ -16,8 +17,7 @@ namespace GrapherApp.UI
     public partial class MainWindow : Window
     {
         private readonly ScaleTransform _scale;
-        private readonly BackgroundWorker _worker;
-        private Evaluator _evaluator;
+        private IFuncRunnerCreator _runnerCreator;
 
 
         public MainWindow()
@@ -35,37 +35,9 @@ namespace GrapherApp.UI
             Version version = Assembly.GetEntryAssembly().GetName().Version;
             this.Title = "Grapher " + version.Major + "." + version.Minor;
 
-            _worker = new BackgroundWorker();
-            _worker.DoWork += (sender, args) =>
-                {
-                    try
-                    {
-                        _evaluator = new Evaluator();
-                    }
-                    catch (Exception ex)
-                    {
-                        args.Result = ex + "";
-                    }
-                };
-            _worker.RunWorkerCompleted += (sender, args) =>
-                {
-                    if (args.Result != null)
-                    {
-                        MessageBox.Show(args.Result+"");
-                        Close();
-                    }
-                };
-            _worker.RunWorkerAsync();
 
-            try
-            {
-                _evaluator = new Evaluator();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-                Close();
-            }
+            _runnerCreator = new FuncRunnerCreator();
+
         }
 
         void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -93,22 +65,26 @@ namespace GrapherApp.UI
         
         private void DrawGraphFromSource(Color color, string source)
         {
-            if(_evaluator == null || !_evaluator.IsInitialized) return;
+            BaseFuncRunner runner;
+            IList<string> errors;
+            if (!_runnerCreator.TryGetRunner(source, out runner, out errors))
+            {
+                Message.Text = String.Join("; ", errors);
+                return;
+            }
 
-            var func = _evaluator.GetFunction(source);
-            
 
             var x2 = Double.NaN;
             var y2 = Double.NaN;
 
             const double edge = 8.0;
-            for (var i = -edge; i <= edge; i += 0.0005)
+            for (var i = -edge; i <= edge; i += 0.005)
             {
                 double x1 = i;
                 double y1;
                 try
                 {
-                    y1 = func(x1);
+                    y1 = runner.Run(x1);
                 }
                 catch(Exception ex)
                 {
