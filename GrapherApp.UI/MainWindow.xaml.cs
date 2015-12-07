@@ -424,6 +424,8 @@ namespace GrapherApp.UI
             TheCanvas.Children.Add(rect);
             AnimateButton.IsEnabled = false;
 
+     
+
             var sw = Stopwatch.StartNew();
             Stopwatch sw2 = null;
             _animationTimer = new DispatcherTimer(DispatcherPriority.Render)
@@ -444,7 +446,7 @@ namespace GrapherApp.UI
                             var yend = runner.Run((to - from) * 1 + from);
                             rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth * yend) - 25);
                             ifFinished = true;
-                            sw2 = Stopwatch.StartNew();
+                            sw2 = Stopwatch.StartNew();       
                         }
                         else if (sw2 != null && sw2.ElapsedMilliseconds > 500)
                         {
@@ -453,6 +455,7 @@ namespace GrapherApp.UI
                             _animationTimer.Stop();
                             _animationTimer = null;
                             _rectangle = null;
+                            ReDrawCanvas();
                         }
                         return;
                     }
