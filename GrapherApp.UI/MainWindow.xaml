@@ -36,12 +36,23 @@
 
                 <Border Grid.Row="0" Grid.Column="0" Background="Red" VerticalAlignment="Stretch"></Border>
                 <TextBox Grid.Row="0" Grid.Column="1" Name="SourceCode1" AcceptsReturn="True" AcceptsTab="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
-                <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="7" Click="Button_Click" VerticalAlignment="Stretch">
+                <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Click="Button_Click" VerticalAlignment="Stretch">
                     <StackPanel Orientation="Vertical">
                         <Label FontSize="15" HorizontalAlignment="Center">Run</Label>
                         <Label FontSize="10" HorizontalAlignment="Center">(Ctrl + Enter) OR (Alt + Enter)</Label>
                     </StackPanel>
                 </Button>
+                <StackPanel Grid.Row="3" Grid.Column="2" Grid.RowSpan="4" Orientation="Vertical">
+                    <UniformGrid Rows="2" Columns="3">
+                        <Label>from X</Label>
+                        <Label>to X</Label>
+                        <Label>sec</Label>
+                        <TextBox Name="AniFrom" Text="0"></TextBox>
+                        <TextBox Name="AniTo" Text="1"></TextBox>
+                        <TextBox Name="AniTime" Text="1"></TextBox>
+                    </UniformGrid>
+                    <Button Name="AnimateButton" Content="Animate" Click="AnimateOnClick"></Button>
+                </StackPanel>
 
                 <GridSplitter Height="5" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" ResizeDirection="Rows" HorizontalAlignment="Stretch" Background="CornflowerBlue"></GridSplitter>
 

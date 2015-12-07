@@ -200,6 +200,7 @@ namespace GrapherApp.UI
         private void ReDrawCanvas()
         {
             TheCanvas.Children.Clear();
+            if (_rectangle != null) TheCanvas.Children.Add(_rectangle);
 
             _scaleTransform.ScaleX = _scaleTransform.ScaleY = 1;
             _scaleTransform.CenterX = 275 + _translate.X;
@@ -245,7 +246,7 @@ namespace GrapherApp.UI
 
             var fromX = PixelToGraphX(-225);
             var toX = PixelToGraphX(1024-225);
-            var step = 0.005/_scale;
+            var step = 0.0025/_scale;
 
             for (var x = fromX; x <= toX; x += step)
             {
@@ -299,7 +300,7 @@ namespace GrapherApp.UI
             return (pixelCoord - _translate.Y - halfWidth) / (halfWidth * _scale);
         }
 
-        private static readonly SolidColorBrush BrushAxis = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xBB, 0xBB));
+        private static readonly SolidColorBrush BrushAxis = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xBB, 0xFF));
         private static readonly SolidColorBrush BrushMajor = new SolidColorBrush(Color.FromArgb(0xFF, 0xAA, 0xAA, 0xAA));
         private static readonly SolidColorBrush BrushMinor = new SolidColorBrush(Color.FromArgb(0x99, 0xCC, 0xCC, 0xCC));
         private static readonly IDictionary<Color,SolidColorBrush> Brushes = new Dictionary<Color, SolidColorBrush>();
@@ -364,6 +365,104 @@ namespace GrapherApp.UI
             return line;
         }
 
-        
+        private Rectangle _rectangle;
+        private DispatcherTimer _animationTimer;
+        private void AnimateOnClick(object sender, RoutedEventArgs e)
+        {
+            double from, to, sec;
+            if (!Double.TryParse(AniFrom.Text.Trim(), out from) || from < -10 || from > 10)
+            {
+                MessageBox.Show("'from X' must be number between -10 and 10");
+                return;
+            }
+            if (!Double.TryParse(AniTo.Text.Trim(), out to) || from < -10 || from > 10)
+            {
+                MessageBox.Show("'to X' must be number between -10 and 10");
+                return;
+            }
+            if (to <= from)
+            {
+                MessageBox.Show("'to X' must be larger then 'from X'");
+                return;
+            }
+            if (!Double.TryParse(AniTime.Text.Trim(), out sec) || sec < 0.1 || sec > 10)
+            {
+                MessageBox.Show("'sec' must be number between 0.1 and 10");
+                return;
+            }
+            var source = SourceCode1.Text.Trim();
+            if (source == "")
+            {
+                MessageBox.Show("Please enter equation for the red curve");
+                return;
+            }
+            if (_animationTimer != null)
+            {
+                MessageBox.Show("Animation is already running");
+                return;
+            }
+            BaseFuncRunner runner;
+            IList<string> errors;
+            if (!_runnerCreator.TryGetRunner(source, out runner, out errors))
+            {
+                MessageBox.Show(String.Join("; ", errors));
+                return;
+            }
+
+            runner.GraphDrawingStarts(Color.FromRgb(0xFF, 0, 0), source);
+
+            var rect = new Rectangle
+            {
+                Fill = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x00, 0x00)),
+                StrokeThickness = 0,
+                Width = 50,
+                Height = 50
+            };
+            rect.SetValue(Canvas.TopProperty, 0.0);
+            var ystart = runner.Run((to - from) * 0 + from);
+            rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth*ystart) - 25);
+            TheCanvas.Children.Add(rect);
+            AnimateButton.IsEnabled = false;
+
+            var sw = Stopwatch.StartNew();
+            Stopwatch sw2 = null;
+            _animationTimer = new DispatcherTimer(DispatcherPriority.Render)
+                              {
+                                  Interval = TimeSpan.FromSeconds(1/60.0)
+                              };
+            
+
+            var ifFinished = false;
+            _animationTimer.Tick += 
+                (o, evt) =>
+                {
+                    var relX = (sw.ElapsedMilliseconds*0.001) / sec;
+                    if (relX > 1)
+                    {
+                        if (!ifFinished)
+                        {
+                            var yend = runner.Run((to - from) * 1 + from);
+                            rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth * yend) - 25);
+                            ifFinished = true;
+                            sw2 = Stopwatch.StartNew();
+                        }
+                        else if (sw2 != null && sw2.ElapsedMilliseconds > 500)
+                        {
+                            AnimateButton.IsEnabled = true;
+                            TheCanvas.Children.Remove(rect);
+                            _animationTimer.Stop();
+                            _animationTimer = null;
+                            _rectangle = null;
+                        }
+                        return;
+                    }
+                    var x = (to - from)*relX + from;
+                    var y = runner.Run(x);
+                    rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth * y) - 25);
+                };
+            _animationTimer.Start();
+            
+
+        }
     }
 }

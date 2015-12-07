@@ -32,8 +32,8 @@
     <SupportUrl>http://www.youvisio.com</SupportUrl>
     <ProductName>Grapher</ProductName>
     <PublisherName>YouVisio Productions Inc.</PublisherName>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>5.9.0.%2a</ApplicationVersion>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>6.1.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>

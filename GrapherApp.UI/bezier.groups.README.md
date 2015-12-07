@@ -1,6 +1,6 @@
 ﻿# sample bezier groups code:
 
-### helper tool http://cubic-bezier.com/?a=1#.79,0,.79,1.5
+helper tool [http://cubic-bezier.com/?a=1#.79,0,.79,1.5](http://cubic-bezier.com/?a=1#.79,0,.79,1.5)
 
 ```csharp
 return beziers(b => b.from(-1,-1)
