@@ -238,6 +238,8 @@ namespace GrapherApp.UI
                 return;
             }
 
+            runner.GraphDrawingStarts(color, source);
+
             var x2 = Double.NaN;
             var y2 = Double.NaN;
 
@@ -272,6 +274,8 @@ namespace GrapherApp.UI
                 x2 = x1;
                 y2 = y1;
             }
+
+            runner.GraphDrawingEnds(color, source);
         }
 
         

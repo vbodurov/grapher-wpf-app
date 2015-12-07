@@ -33,7 +33,7 @@
     <ProductName>Grapher</ProductName>
     <PublisherName>YouVisio Productions Inc.</PublisherName>
     <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>5.3.0.%2a</ApplicationVersion>
+    <ApplicationVersion>5.9.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -48,6 +48,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -147,7 +148,11 @@
     </ApplicationDefinition>
     <Compile Include="GridLineType.cs" />
     <Compile Include="Services\BaseFuncRunner.cs" />
+    <Compile Include="Services\BezierGroup.cs" />
+    <Compile Include="Services\BezierHelper.cs" />
     <Compile Include="Services\FuncRunnerCreator.cs" />
+    <Compile Include="Services\PointDouble.cs" />
+    <Compile Include="Services\RangeSet.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -168,6 +173,7 @@
     </Compile>
     <None Include="app.config" />
     <AppDesigner Include="Properties\" />
+    <None Include="bezier.groups.README.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
