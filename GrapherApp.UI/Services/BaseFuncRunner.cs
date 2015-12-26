@@ -30,6 +30,7 @@ namespace GrapherApp.UI.Services
         protected const double E = Math.E;
         protected const double pi = Math.PI;
         protected const double e = Math.E;
+        protected double clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
         protected double lerp(double a, double b, double c) { return (b - a) * c + a; }
         protected double avg(double a, double b) { return (b - a) * 0.5 + a; }
         protected double pow(double x, double n) { return Math.Pow(x, n); }
@@ -67,6 +68,7 @@ namespace GrapherApp.UI.Services
         protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
 
 
+        protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
         protected double Lerp(double a, double b, double c) { return lerp(a, b, c); }
         protected double Avg(double a, double b) { return avg(a, b); }
         protected double Pow(double x, double n) { return pow(x, n); }
