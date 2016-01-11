@@ -33,7 +33,7 @@
     <ProductName>Grapher</ProductName>
     <PublisherName>YouVisio Productions Inc.</PublisherName>
     <ApplicationRevision>7</ApplicationRevision>
-    <ApplicationVersion>7.2.0.%2a</ApplicationVersion>
+    <ApplicationVersion>7.5.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -50,6 +50,8 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <LangVersion>6</LangVersion>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -147,7 +149,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BezierLinkedList.cs" />
+    <Compile Include="DotType.cs" />
     <Compile Include="GridLineType.cs" />
+    <Compile Include="Model\Vector2.cs" />
+    <Compile Include="Model\Vector3.cs" />
     <Compile Include="Services\BaseFuncRunner.cs" />
     <Compile Include="Services\BezierGroup.cs" />
     <Compile Include="Services\BezierHelper.cs" />

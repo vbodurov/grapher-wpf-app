@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Text.RegularExpressions;
 using GrapherApp.UI;
 using NUnit.Framework;
 
@@ -12,11 +13,12 @@ namespace GrapherApp.Tests
         [Test]
         public void Test1()
         {
-            foreach (var i in Enumerable.Range(1,10))
-            {
-                var midIndex = (int)(i / 2.0);
-                Console.WriteLine(i+"="+midIndex);
-            }
+            var s = @"
+                return bezier(x, 123456,345)/**/;
+            ";
+
+            Console.WriteLine(Regex.Replace(s,@"([ \t\n\r;,/*]|return)",""));
+            
         }
     }
 }

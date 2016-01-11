@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Deployment.Application;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,31 +22,51 @@ namespace GrapherApp.UI
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public interface IDrawingBoardHolder
     {
+        void OnStartPointMouseDown(object sender, MouseButtonEventArgs e);
+        void OnEndPointMouseDown(object sender, MouseButtonEventArgs e);
+        void OnControl1PointMouseDown(object sender, MouseButtonEventArgs e);
+        void OnControl2PointMouseDown(object sender, MouseButtonEventArgs e);
+        double GraphToPixelX(double graphCoord);
+        double GraphToPixelY(double graphCoord);
+        double PixelToGraphX(double pixelCoord);
+        double PixelToGraphY(double pixelCoord);
+    }
+    public partial class MainWindow : Window, IDrawingBoardHolder
+    {
+        private const double PixelsPerOne = 250;
+        private const double CanvasWidth = 1024;
+        private const double CanvasHeight = 600;
+        private const double CanvasHalfWidth = CanvasWidth/2;
+        private const double CanvasHalfHeight = CanvasHeight/2;
+
         private readonly ScaleTransform _scaleTransform;
         private readonly TranslateTransform _translateTransform;
         private readonly IFuncRunnerCreator _runnerCreator;
         private readonly DispatcherTimer _timer;
+        private readonly BezierLinkedList _beziers = new BezierLinkedList();
+        private readonly IDrawingBoardHolder _eh;
 
-
-        private double _scale = 1;
-        private Point _translate = new Point(0,0);
+//        private double _scale = 1;
+//        private Point _translate = new Point(0,0);
         private Point? _dragPosition = null;
-
+        private DraggedBezierPoint _draggedBezierPoint;
 
         public MainWindow()
         {
+            _eh = this;
             InitializeComponent();
 
             
 
             var t = new TransformGroup();
-            t.Children.Add(_scaleTransform = new ScaleTransform(1, 1, 275, 275));
+
+            t.Children.Add(_scaleTransform = new ScaleTransform(1, 1, CanvasHalfWidth, CanvasHalfHeight));
             t.Children.Add(_translateTransform = new TranslateTransform(0,0));
             TheCanvas.RenderTransform = t;
 
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(100)};
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(80)};
             _timer.Tick += OnTimerTick;
 
             KeyDown += MainWindow_KeyDown;
@@ -74,28 +99,31 @@ namespace GrapherApp.UI
         }
         void TheCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            // no zoom when has bezier because there is a zoom bug I haven't figured out yet
+            if(_beziers.Count > 0) return;
+
             var n = e.Delta > 0 ? 0.05 : -0.05;
             var candidate = _scaleTransform.ScaleX + n;
             if (candidate > 0.2 && candidate < 5)
             {
-                var pre = _scaleTransform.ScaleX;
-
                 _scaleTransform.ScaleX = _scaleTransform.ScaleY = candidate;
-
-                _scale *= (1.0 + (candidate-pre));
             }
 
             _timer.Stop();
             _timer.Start();
         }
+
         void OnTimerTick(object sender, EventArgs e)
         {
             _timer.Stop();
-            ReDrawCanvas();
+            if (_beziers.Count == 0)
+            {
+                ReDrawCanvas();
+            }
         }
         void MainWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _dragPosition = e.GetPosition(OuterCanvas);
+            OnDragStarts(e.GetPosition(OuterCanvas));
         }
         void MainWindow_MouseMove(object sender, MouseEventArgs e)
         {
@@ -106,29 +134,61 @@ namespace GrapherApp.UI
                 return;
             }
             var position = e.GetPosition(OuterCanvas);
-            var diff = position - _dragPosition.Value;
-            _translate.X += diff.X;
-            _translate.Y += diff.Y;
-            _translateTransform.X += diff.X;
-            _translateTransform.Y += diff.Y;
+            // if dragging bezier point
+            if (_draggedBezierPoint != null)
+            {
+                var p = e.GetPosition(TheCanvas);
+                MoveBezierPont(_draggedBezierPoint, p);
+            }
+            else // if dragging the canvas
+            {
+                var diff = position - _dragPosition.Value;
+                _translateTransform.X += diff.X;
+                _translateTransform.Y += diff.Y;
+            }
             _dragPosition = position;
         }
+
+        private void MoveBezierPont(DraggedBezierPoint point, Point pos)
+        {
+            point.Curve.SetPoint(point.Type, pos);
+        }
+
+        void IDrawingBoardHolder.OnStartPointMouseDown(object sender, MouseButtonEventArgs e) =>
+            TryStartDragPoint(sender, DotType.Start);
+        void IDrawingBoardHolder.OnEndPointMouseDown(object sender, MouseButtonEventArgs e) =>
+            TryStartDragPoint(sender, DotType.End);
+        void IDrawingBoardHolder.OnControl1PointMouseDown(object sender, MouseButtonEventArgs e) =>
+            TryStartDragPoint(sender, DotType.Control1);
+        void IDrawingBoardHolder.OnControl2PointMouseDown(object sender, MouseButtonEventArgs e) =>
+            TryStartDragPoint(sender, DotType.Control2);
+        private bool TryStartDragPoint(object sender, DotType dotType)
+        {
+            if (_beziers.Count == 0) return false;
+            var ellipse = sender as Ellipse;
+            var curve = ellipse?.Tag as IBezierCurve;
+            if (curve == null) return false;
+            _draggedBezierPoint = new DraggedBezierPoint(curve, dotType);
+            return true;
+        }
+
         void MainWindow_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             OnDragEnds();
         }
 
-
-
-
-
-
-
-
+        private void OnDragStarts(Point point)
+        {
+            _dragPosition = point;
+        }
         private void OnDragEnds()
         {
             _dragPosition = null;
-            ReDrawCanvas();
+            _draggedBezierPoint = null;
+            if (_beziers.Count == 0)
+            {
+                ReDrawCanvas();
+            }
         }
         private void AddErrorMessage(string error)
         {
@@ -143,23 +203,23 @@ namespace GrapherApp.UI
         {
             for (var x = -10; x <= 10; x += 1)
             {
-                AddGridLine(GraphToPixelX(x), GraphToPixelY(-10), GraphToPixelX(x), GraphToPixelY(10), GetTypeByValue(x));
+                AddGridLine(x, 10, x, -10, GetTypeByValue(x));
             }
             for (var y = -10; y <= 10; y += 1)
             {
-                AddGridLine(GraphToPixelX(-10), GraphToPixelY(y), GraphToPixelX(10), GraphToPixelY(y), GetTypeByValue(y));
+                AddGridLine(-10, y, 10, y, GetTypeByValue(y));
             }
-            if (_scale > 0.3)
+            if (_scaleTransform.ScaleX > 0.3)
             {
                 for (var x = -1.1; x <= 1.1; x += 0.1)
                 {
                     if (Math.Abs(x - Math.Round(x)) > 0.0001)
-                        AddGridLine(GraphToPixelX(x), GraphToPixelY(-1.1), GraphToPixelX(x), GraphToPixelY(1.1), GetTypeByValue(x));
+                        AddGridLine(x, 1.1, x, -1.1, GetTypeByValue(x));
                 }
                 for (var y = -1.1; y <= 1.1; y += 0.1)
                 {
                     if (Math.Abs(y - Math.Round(y)) > 0.0001)
-                        AddGridLine(GraphToPixelX(-1.1), GraphToPixelY(y), GraphToPixelX(1.1), GraphToPixelY(y), GetTypeByValue(y));
+                        AddGridLine(-1.1, y, 1.1, y, GetTypeByValue(y));
                 }
             }
             
@@ -182,39 +242,50 @@ namespace GrapherApp.UI
 
         private void EnsureNoInfinity(ref double x1, ref double y1, ref double x2, ref double y2)
         {
-            if (Double.IsNegativeInfinity(x1)) x1 = -10000;
-            if (Double.IsPositiveInfinity(x1)) x1 = 10000;
-            if (Double.IsNegativeInfinity(y1)) y1 = -10000;
-            if (Double.IsPositiveInfinity(y1)) y1 = 10000;
-            if (Double.IsNegativeInfinity(x2)) x2 = -10000;
-            if (Double.IsPositiveInfinity(x2)) x2 = 10000;
-            if (Double.IsNegativeInfinity(y2)) y2 = -10000;
-            if (Double.IsPositiveInfinity(y2)) y2 = 10000;
+            if (double.IsNegativeInfinity(x1)) x1 = -10000;
+            if (double.IsPositiveInfinity(x1)) x1 = 10000;
+            if (double.IsNegativeInfinity(y1)) y1 = -10000;
+            if (double.IsPositiveInfinity(y1)) y1 = 10000;
+            if (double.IsNegativeInfinity(x2)) x2 = -10000;
+            if (double.IsPositiveInfinity(x2)) x2 = 10000;
+            if (double.IsNegativeInfinity(y2)) y2 = -10000;
+            if (double.IsPositiveInfinity(y2)) y2 = 10000;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+
+        private void RunButtonOnClick(object sender, RoutedEventArgs e)
         {
+            if (_beziers.Count > 0)
+            {
+                // check if this is not another (non bezier) func the user whants to run
+                var txt = Regex.Replace(SourceCode1.Text,@"([ \t\n\r;,/*]|return)","");
+                if (txt.Trim() == "" || 
+                    txt.StartsWith("bezier", StringComparison.CurrentCultureIgnoreCase))
+                {
+                    SourceCode1.Text = _beziers.ToCode(this);
+                    SourceCode2.Text = SourceCode3.Text = SourceCode4.Text = "";
+                }
+            }
+            _beziers.Clear(TheCanvas, this);
             ReDrawCanvas();
         }
 
+        private readonly BaseFuncRunner[] _runners = new BaseFuncRunner[4];
         private void ReDrawCanvas()
         {
             TheCanvas.Children.Clear();
             if (_rectangle != null) TheCanvas.Children.Add(_rectangle);
 
-            _scaleTransform.ScaleX = _scaleTransform.ScaleY = 1;
-            _scaleTransform.CenterX = 275 + _translate.X;
-            _scaleTransform.CenterY = 275 + _translate.Y;
-            _translateTransform.X = _translateTransform.Y = 0;
-
             Message.Text = "";
+
+            
             try
             {
                 DrawLines();
-                DrawIfHasCode(Colors.Red, SourceCode1);
-                DrawIfHasCode(Colors.Green, SourceCode2);
-                DrawIfHasCode(Colors.Blue, SourceCode3);
-                DrawIfHasCode(Colors.Purple, SourceCode4);
+                _runners[0] = DrawIfHasCode(Colors.Red, SourceCode1);
+                _runners[1] = DrawIfHasCode(Colors.Green, SourceCode2);
+                _runners[2] = DrawIfHasCode(Colors.Blue, SourceCode3);
+                _runners[3] = DrawIfHasCode(Colors.Purple, SourceCode4);
             }
             catch (Exception ex)
             {
@@ -222,31 +293,31 @@ namespace GrapherApp.UI
             }
         }
 
-        private void DrawIfHasCode(Color color, TextBox sourceCode)
+        private BaseFuncRunner DrawIfHasCode(Color color, TextBox sourceCode)
         {
             var code = sourceCode.Text.Trim();
-
-            if (code != "") DrawGraphFromSource(color, sourceCode.Text);
+            BaseFuncRunner r = null;
+            if (code != "") r = DrawGraphFromSource(color, sourceCode.Text);
+            return r;
         }
 
-        private void DrawGraphFromSource(Color color, string source)
+        private BaseFuncRunner DrawGraphFromSource(Color color, string source)
         {
             BaseFuncRunner runner;
             IList<string> errors;
             if (!_runnerCreator.TryGetRunner(source, out runner, out errors))
             {
                 Message.Text = String.Join("; ", errors);
-                return;
+                return null;
             }
-
             runner.GraphDrawingStarts(color, source);
 
-            var x2 = Double.NaN;
-            var y2 = Double.NaN;
+            var x2 = double.NaN;
+            var y2 = double.NaN;
 
-            var fromX = PixelToGraphX(-225);
-            var toX = PixelToGraphX(1024-225);
-            var step = 0.0025/_scale;
+            var fromX = Math.Min(_eh.PixelToGraphX(0), -3/_scaleTransform.ScaleX);
+            var toX = Math.Max(_eh.PixelToGraphX(CanvasWidth), 3/_scaleTransform.ScaleX);
+            var step = 0.005/_scaleTransform.ScaleX;
 
             for (var x = fromX; x <= toX; x += step)
             {
@@ -261,13 +332,12 @@ namespace GrapherApp.UI
                     AddErrorMessage(ex.Message);
                     break;
                 }
-                if (Double.IsNaN(y1) || Double.IsInfinity(y1))
+                if (double.IsNaN(y1) || double.IsInfinity(y1))
                 {
                     continue;
                 }
 
-
-                if (!Double.IsNaN(x2) && !Double.IsNaN(y2) && !Double.IsInfinity(x2) && !Double.IsInfinity(y2))
+                if (!double.IsNaN(x2) && !double.IsNaN(y2) && !double.IsInfinity(x2) && !double.IsInfinity(y2))
                 {
                     AddLine(x1, y1, x2, y2, color);
                 }
@@ -277,27 +347,28 @@ namespace GrapherApp.UI
             }
 
             runner.GraphDrawingEnds(color, source);
+
+            return runner;
         }
 
-        
-        const double width = 550;
-        const double halfWidth = width * 0.5;
-        private double GraphToPixelX(double graphCoord)
+
+
+        double IDrawingBoardHolder.GraphToPixelX(double graphCoord)
         {
-            return (halfWidth + graphCoord * halfWidth * _scale + _translate.X);
+            return graphCoord  * PixelsPerOne * _scaleTransform.ScaleX + _scaleTransform.CenterX;
         }
-        private double GraphToPixelY(double graphCoord)
+        double IDrawingBoardHolder.GraphToPixelY(double graphCoord)
         {
-            return (halfWidth + graphCoord * halfWidth * _scale + _translate.Y);
+            return graphCoord  * -PixelsPerOne * _scaleTransform.ScaleY + _scaleTransform.CenterY;
         }
 
-        private double PixelToGraphX(double pixelCoord)
+        double IDrawingBoardHolder.PixelToGraphX(double pixelCoord)
         {
-            return (pixelCoord - _translate.X - halfWidth) / (halfWidth*_scale);
+            return (pixelCoord - _scaleTransform.CenterX)/(PixelsPerOne * _scaleTransform.ScaleX);
         }
-        private double PixelToGraphY(double pixelCoord)
+        double IDrawingBoardHolder.PixelToGraphY(double pixelCoord)
         {
-            return (pixelCoord - _translate.Y - halfWidth) / (halfWidth * _scale);
+            return (pixelCoord - _scaleTransform.CenterY)/(-PixelsPerOne*_scaleTransform.ScaleY);
         }
 
         private static readonly SolidColorBrush BrushAxis = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xBB, 0xFF));
@@ -307,8 +378,10 @@ namespace GrapherApp.UI
 
         private Line AddGridLine(double x1, double y1, double x2, double y2, GridLineType type)
         {
-            if ((y1 < -50 && y2 < -50) || (y1 > 600 && y2 > 600)) return null;
-            if ((x1 < -300 && x2 < -300) || (x1 > 900 && x2 > 900)) return null;
+            x1 = _eh.GraphToPixelX(x1);
+            y1 = _eh.GraphToPixelY(y1);
+            x2 = _eh.GraphToPixelX(x2);
+            y2 = _eh.GraphToPixelY(y2);
 
             EnsureNoInfinity(ref x1, ref y1, ref x2, ref y2);
 
@@ -332,12 +405,16 @@ namespace GrapherApp.UI
 
         private void AddLine(double x1, double y1, double x2, double y2, Color color)
         {
-            var px1 = GraphToPixelX(x1);
-            var py1 = GraphToPixelY(-y1);
-            var px2 = GraphToPixelX(x2);
-            var py2 = GraphToPixelY(-y2);
+            var px1 = _eh.GraphToPixelX(x1);
+            var py1 = _eh.GraphToPixelY(y1);
+            var px2 = _eh.GraphToPixelX(x2);
+            var py2 = _eh.GraphToPixelY(y2);
 
-            if ((py1 < -100 && py2 < -100) || (py1 > 600 && py2 > 600)) return;
+            var minY = Math.Min(py1, py2);
+            var maxY = Math.Max(py1, py2);
+//            var minX = Math.Min(px1, px2);
+//            var maxX = Math.Max(px1, px2);
+            if(minY < -CanvasHeight || maxY > CanvasHeight+CanvasHeight) return;
 
             AddGraphLine(px1, py1, px2, py2, color);
         }
@@ -367,6 +444,8 @@ namespace GrapherApp.UI
 
         private Rectangle _rectangle;
         private DispatcherTimer _animationTimer;
+        
+
         private void AnimateOnClick(object sender, RoutedEventArgs e)
         {
             double from, to, sec;
@@ -418,9 +497,11 @@ namespace GrapherApp.UI
                 Width = 50,
                 Height = 50
             };
-            rect.SetValue(Canvas.TopProperty, 0.0);
+            var rectHalfWidth = 25*_scaleTransform.ScaleX;
+
+            rect.SetValue(Canvas.LeftProperty, CanvasHalfWidth - rectHalfWidth);
             var ystart = runner.Run((to - from) * 0 + from);
-            rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth*ystart) - 25);
+            rect.SetValue(Canvas.TopProperty, CanvasHalfHeight + (-PixelsPerOne*ystart) - rectHalfWidth);
             TheCanvas.Children.Add(rect);
             AnimateButton.IsEnabled = false;
 
@@ -444,7 +525,7 @@ namespace GrapherApp.UI
                         if (!ifFinished)
                         {
                             var yend = runner.Run((to - from) * 1 + from);
-                            rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth * yend) - 25);
+                            rect.SetValue(Canvas.TopProperty, CanvasHalfHeight + (-PixelsPerOne * yend) - rectHalfWidth);
                             ifFinished = true;
                             sw2 = Stopwatch.StartNew();       
                         }
@@ -461,11 +542,168 @@ namespace GrapherApp.UI
                     }
                     var x = (to - from)*relX + from;
                     var y = runner.Run(x);
-                    rect.SetValue(Canvas.LeftProperty, halfWidth + (halfWidth * y) - 25);
+                    rect.SetValue(Canvas.TopProperty, CanvasHalfHeight + (-PixelsPerOne * y) - rectHalfWidth);
                 };
             _animationTimer.Start();
             
 
         }
+
+        private void CodeToBezierUiButtonOnClick(object sender, RoutedEventArgs e)
+        {
+            var txt = SourceCode1.Text;
+            SourceCode2.Text = SourceCode3.Text = SourceCode4.Text = "";
+            ReDrawCanvas();
+            IBezierGroup bg = _runners[0]?.BezierGroup;
+            if (bg == null || bg.FragmentsCount == 0)
+            {
+                txt = txt.Replace(" ","").Replace("\t","").ToLowerInvariant();
+                if (txt.StartsWith("bezier("))
+                {
+                    txt = txt.Replace("bezier(", "").Replace("x,", "").Replace("f,", "").Replace("m,", "").Replace(")", "").Replace(";", "");
+                    var arr = 
+                        txt.Split(',')
+                        .Select(s =>
+                        {
+                            double d;
+                            if (double.TryParse(s, out d))
+                            {
+                                return d;
+                            }
+                            return double.NaN;
+                        })
+                        .Where(d => !double.IsNaN(d))
+                        .ToArray();
+                    if (arr.Length == 4)
+                    {
+                        IBezierGroupBuilder bgb = new BezierGroup();
+                        bgb.from(0, 0);
+                        bgb.to(1, 1).curve(arr[0],arr[1],arr[2],arr[3]);
+                        bg = (IBezierGroup)bgb;
+                    }
+                    else if (arr.Length == 8)
+                    {
+                        IBezierGroupBuilder bgb = new BezierGroup();
+                        bgb.from(arr[0],arr[1]);
+                        bgb.to(arr[6],arr[7]).curve(arr[2],arr[3],arr[4],arr[5]);
+                        bg = (IBezierGroup)bgb;
+                    }
+                }
+
+
+                if (bg == null)
+                {
+                    IBezierGroupBuilder bgb = new BezierGroup();
+                    bgb.from(0, 0);
+                    bgb.to(1, 1).curve(0.17,0.67,0.8,0.33);
+                    bg = (IBezierGroup)bgb;
+                }
+            }
+
+            // ReSharper disable once PossibleNullReferenceException
+            GenerateBezierUi(bg, TheCanvas, this);
+        }
+
+        private void GenerateBezierUi(IBezierGroup bezierGroup, Canvas canvas, IDrawingBoardHolder eventsHolder)
+        {
+            canvas.Children.Clear();
+            DrawLines();
+            _beziers.Clear(canvas, eventsHolder);
+            foreach (var f in bezierGroup.Fragments)
+            {
+                _beziers.AddBezier(canvas, eventsHolder, f);
+            }
+        }
+
+
+        private void SingleBezierOnClick(object sender, RoutedEventArgs e)
+        {
+            SourceCode1.Text = "bezier(x,.17,.67,.8,.33)";
+            ReDrawCanvas();
+        }
+        private void DoubleBezierOnClick(object sender, RoutedEventArgs e)
+        {
+            SourceCode1.Text = @"return beziers(b => b.from(-1,-1)
+    .to(0,0).curve(-0.26,-1.63,-0.24,-0.85)
+    .to(1,1).curve(.55,.18,.79,1.5))
+.run(x)";
+            ReDrawCanvas();
+        }
+        private void ClearBezierOnClick(object sender, RoutedEventArgs e)
+        {
+            _beziers.Clear(TheCanvas, this);
+            TheCanvas.Children.Clear();
+            DrawLines();
+        }
+
+        internal class DraggedBezierPoint
+        {
+            public DraggedBezierPoint(IBezierCurve curve, DotType type)
+            {
+                Curve = curve;
+                Type = type;
+            }
+            public IBezierCurve Curve { get; private set; }
+            public DotType Type { get; private set; }
+        }
     }
+
+    internal static class MainWindowsExtensions
+    {
+        public static Color MultiplyBy(this Color c, double factor)
+        {
+            factor = factor < 0 ? 0.0 : factor > 1 ? 1.0 : factor;
+            if (factor > 0.9999999) return c;
+            return Color.FromArgb(c.A,(byte)(c.R*factor),(byte)(c.G*factor),(byte)(c.B*factor));
+        }
+
+        public static void GetScreenPoints(this Path path, out Point a, out Point b, out Point c, out Point d)
+        {
+            var pg = (PathGeometry) path.Data;
+            var pf = pg.Figures[0];
+            var bs = (BezierSegment) pf.Segments[0];
+            a = pf.StartPoint;
+            b = bs.Point1;
+            c = bs.Point2;
+            d = bs.Point3;
+        }
+
+        public static void GetGraphPoints(this Path path, IDrawingBoardHolder holder, out Point a, out Point b, out Point c, out Point d)
+        {
+            path.GetScreenPoints(out a, out b, out c, out d);
+
+            a = new Point(holder.PixelToGraphX(a.X), holder.PixelToGraphY(a.Y));
+            b = new Point(holder.PixelToGraphX(b.X), holder.PixelToGraphY(b.Y));
+            c = new Point(holder.PixelToGraphX(c.X), holder.PixelToGraphY(c.Y));
+            d = new Point(holder.PixelToGraphX(d.X), holder.PixelToGraphY(d.Y));
+        }
+
+        public static StringBuilder AppendCurves(
+            this StringBuilder sb, 
+            IEnumerable<IBezierCurve> curves,
+            IDrawingBoardHolder holder,
+            Func<Point, Point, Point, Point, string> format)
+        {
+            foreach (var curve in curves)
+            {
+                Point a, b, c, d;
+                curve.Path.GetGraphPoints(holder, out a, out b, out c, out d);
+                sb.AppendLine(format(a,b,c,d));
+            }
+            return sb;
+        }
+
+        public static void SetLines(this IBezierCurve curve)
+        {
+            curve.Line1.X1 = curve.PathFigure.StartPoint.X;
+            curve.Line1.Y1 = curve.PathFigure.StartPoint.Y;
+            curve.Line1.X2 = curve.BezierSegment.Point1.X;
+            curve.Line1.Y2 = curve.BezierSegment.Point1.Y;
+            curve.Line2.X1 = curve.BezierSegment.Point3.X;
+            curve.Line2.Y1 = curve.BezierSegment.Point3.Y;
+            curve.Line2.X2 = curve.BezierSegment.Point2.X;
+            curve.Line2.Y2 = curve.BezierSegment.Point2.Y;
+        }
+    }
+
 }

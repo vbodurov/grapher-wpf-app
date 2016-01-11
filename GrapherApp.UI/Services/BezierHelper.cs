@@ -1,4 +1,5 @@
 ﻿using System;
+using GrapherApp.UI.Model;
 
 namespace GrapherApp.UI.Services
 {
@@ -83,15 +84,15 @@ namespace GrapherApp.UI.Services
             r0 = -rSign * (tmp + q / tmp) - b / 3.0;
             return 1;
         }
-        public static double Bezier(double x, double bx, double by, double cx, double cy)
+        public static double GetY(double x, double bx, double by, double cx, double cy)
         {
-            return Bezier(x, 0, 0, bx, by, cx, cy, 1, 1);
+            return GetY(x, 0, 0, bx, by, cx, cy, 1, 1);
         }
         private static double GetSingleValue(double t, double a, double b, double c, double d)
         {
             return (t * t * (d - a) + 3 * (1 - t) * (t * (c - a) + (1 - t) * (b - a))) * t + a;
         }
-        public static double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy)
+        public static double GetY(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy)
         {
             if (ax < dx)
             {
@@ -130,6 +131,60 @@ namespace GrapherApp.UI.Services
             }
 
             return Double.IsNaN(time) ? Double.NaN : GetSingleValue(time, ay, by, cy, dy);
+        }
+
+        public static Vector2 GetPoint(double progress, Vector2 p0, Vector2 p1, Vector2 p2, Vector2 p3)
+        {
+            // cubic bezier formula is
+            // [x,y] = 
+            //      (1 - t)^3 * P0 + 
+            //      3 * (1 - t)^2 * t * P1 + 
+            //      3 * (1 - t) * t^2 * P2 +
+            //      t^3 * P3
+            // where 0 <= t <= 1
+
+            float t = (float)progress;
+            float u = 1 - t;
+            float tt = t * t;
+            float uu = u * u;
+            float uuu = uu * u;
+            float ttt = tt * t;
+
+            Vector2 p = uuu * p0; //first term
+
+            p += (3 * uu * t) * p1; //second term
+            p += (3 * u * tt) * p2; //third term
+            p += ttt * p3; //fourth term
+
+            return p;
+
+        }
+
+        public static Vector3 GetPoint(double progress, Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+        {
+            // cubic bezier formula is
+            // [x,y] = 
+            //      (1 - t)^3 * P0 + 
+            //      3 * (1 - t)^2 * t * P1 + 
+            //      3 * (1 - t) * t^2 * P2 +
+            //      t^3 * P3
+            // where 0 <= t <= 1
+
+            float t = (float)progress;
+            float u = 1 - t;
+            float tt = t * t;
+            float uu = u * u;
+            float uuu = uu * u;
+            float ttt = tt * t;
+
+            Vector3 p = uuu * p0; //first term
+
+            p += (3 * uu * t) * p1; //second term
+            p += (3 * u * tt) * p2; //third term
+            p += ttt * p3; //fourth term
+
+            return p;
+
         }
     }
 }

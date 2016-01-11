@@ -24,6 +24,7 @@ namespace GrapherApp.UI.Services
             return _bezierGroupBuilder.setup(setup);
         }
 
+        public IBezierGroup BezierGroup => (IBezierGroup)_bezierGroupBuilder;
 
         protected BaseFuncRunner fn => this;
         protected const double PI = Math.PI;
@@ -64,8 +65,8 @@ namespace GrapherApp.UI.Services
         protected double log(double x) { return Math.Log(x); }
         protected double log(double x, double y) { return Math.Log(x, y); }
         protected double log10(double x) { return Math.Log10(x); }
-        protected double bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.Bezier(x, bx, by, cx, cy); }
-        protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
+        protected double bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
+        protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
 
 
         protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
@@ -94,8 +95,8 @@ namespace GrapherApp.UI.Services
         protected double Log(double x) { return log(x); }
         protected double Log(double x, double y) { return log(x, y); }
         protected double Log10(double x) { return log10(x); }
-        protected double Bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.Bezier(x, bx, by, cx, cy); }
-        protected double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.Bezier(x, ax, ay, bx, by, cx, cy, dx, dy); }
+        protected double Bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
+        protected double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
     }
 
 }

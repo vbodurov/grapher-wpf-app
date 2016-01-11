@@ -12,7 +12,7 @@
 
 
         <Canvas Grid.Row="0" Name="OuterCanvas"  Width="1024" Height="600" Background="WhiteSmoke" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Canvas Name="TheCanvas" Canvas.Left="237" Canvas.Top="25" ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
+            <Canvas Name="TheCanvas" ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
         </Canvas>
 
         <GridSplitter Height="5" Grid.Row="1" ResizeDirection="Rows" HorizontalAlignment="Stretch" Background="CornflowerBlue"></GridSplitter>
@@ -36,12 +36,20 @@
 
                 <Border Grid.Row="0" Grid.Column="0" Background="Red" VerticalAlignment="Stretch"></Border>
                 <TextBox Grid.Row="0" Grid.Column="1" Name="SourceCode1" AcceptsReturn="True" AcceptsTab="True" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" />
-                <Button Grid.Row="0" Grid.Column="2" Grid.RowSpan="3" Click="Button_Click" VerticalAlignment="Stretch">
-                    <StackPanel Orientation="Vertical">
-                        <Label FontSize="15" HorizontalAlignment="Center">Run</Label>
-                        <Label FontSize="10" HorizontalAlignment="Center">(Ctrl + Enter) OR (Alt + Enter)</Label>
+                <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
+                    <Button Margin="1" Click="CodeToBezierUiButtonOnClick">Code -&gt; Bezier UI</Button>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Width="60" Margin="1" Click="SingleBezierOnClick">1 Bezier</Button>
+                        <Button Width="60" Margin="1" Click="DoubleBezierOnClick">2 Bezier</Button>
+                        <Button Width="20" Margin="1" Click="ClearBezierOnClick">X</Button>
                     </StackPanel>
-                </Button>
+                    <Button Margin="1" Click="RunButtonOnClick" VerticalAlignment="Top" Height="90">
+                        <StackPanel Orientation="Vertical">
+                            <Label FontSize="15" HorizontalAlignment="Center">Run</Label>
+                            <Label FontSize="10" HorizontalAlignment="Center">(Ctrl + Enter) OR (Alt + Enter)</Label>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
                 <StackPanel Grid.Row="3" Grid.Column="2" Grid.RowSpan="4" Orientation="Vertical">
                     <UniformGrid Rows="2" Columns="3">
                         <Label>from X</Label>

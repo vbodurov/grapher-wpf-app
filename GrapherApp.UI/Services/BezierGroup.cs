@@ -1,6 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-
+using GrapherApp.UI.Model;
+// !!! not to be converted in C# 6 because it is intended to be copy pasteable into Unity 3D (.NET 3.5)
+// ReSharper disable ConvertPropertyToExpressionBody
 /*
 http://cubic-bezier.com/#.97,.37,.24,.85
 var y =
@@ -14,6 +19,8 @@ namespace GrapherApp.UI.Services
     public interface IBezierGroup
     {
         double run(double x);
+        int FragmentsCount { get; }
+        IEnumerable<IBezierFragment> Fragments { get; }
     }
     public interface IBezierGroupBuilder
     {
@@ -51,6 +58,8 @@ namespace GrapherApp.UI.Services
             _fragments = new RangeSet<IBezierFragment>(0);
         }
 
+        int IBezierGroup.FragmentsCount { get { return _fragments.Count; } }
+
         double IBezierGroup.run(double x)
         {
             IBezierFragment fragment;
@@ -62,6 +71,8 @@ namespace GrapherApp.UI.Services
         }
         PointDouble IBezierGroupBuilder.From { get { return _from; } }
         double IBezierGroupBuilder.LastLimit { get { return _fragments.LastLimit; } }
+
+        IEnumerable<IBezierFragment> IBezierGroup.Fragments { get { return _fragments; } }
         IBezierGroup IBezierGroupBuilder.setup(Action<IBezierGroupBuilder> setup)
         {
             if (!_isSetUpFunctionInvoked)
@@ -116,9 +127,23 @@ namespace GrapherApp.UI.Services
 
         double IBezierFragment.run(double x)
         {
-            var relativeX = (x - _from.X)/_xRange;
-            var relativeY = BezierHelper.Bezier(relativeX, _b.X, _b.Y, _c.X, _c.Y);
-            return relativeY*_yRange + _from.Y;
+//            var relativeX = (x - _from.X)/_xRange;
+//            var relativeY = BezierHelper.Bezier(relativeX, _b.X, _b.Y, _c.X, _c.Y);
+//            return relativeY*_yRange + _from.Y;
+//            return BezierHelper.Bezier(x, _from.X, _from.Y, _b.X, _b.Y, _c.X, _c.Y, _to.X, _to.Y);
+
+//            var y = BezierHelper.Bezier(x, _from.X, _from.Y, _b.X, _b.Y, _c.X, _c.Y, _to.X, _to.Y);
+//
+//            Debug.WriteLine(x+" = "+y+"|"+((x- _from.X)/(_to.X - _from.X)));
+//
+//            return y;
+
+            return BezierHelper.GetY(
+                    x,
+                    _from.X,  _from.Y,
+                    _b.X, _b.Y,
+                    _c.X, _c.Y,
+                    _to.X, _to.Y);
         }
         IBezierFragmentBuilder IBezierFragmentBuilder.to(double x, double y)
         {
@@ -130,5 +155,7 @@ namespace GrapherApp.UI.Services
             _c = new PointDouble(cx, cy);
             return this;
         }
+
+        
     }
 }
