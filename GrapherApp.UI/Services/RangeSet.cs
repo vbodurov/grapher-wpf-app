@@ -60,6 +60,7 @@ namespace GrapherApp.UI.Services
 
         public bool TryFind(double n, out T state)
         {
+            // first we check previously requested range
             if (_lastRangeState != null)
             {
                 if (_lastRangeState.IsWithin(n))
@@ -67,6 +68,7 @@ namespace GrapherApp.UI.Services
                     state = _lastRangeState.Value;
                     return true;
                 }
+                // if it isn't last check the next
                 if(_lastRangeState.Index < (_ranges.Count - 1) && _ranges[_lastRangeState.Index+1].IsWithin(n))
                 {
                     _lastRangeState = _ranges[_lastRangeState.Index + 1];
@@ -74,18 +76,28 @@ namespace GrapherApp.UI.Services
                     return true;
                 }
             }
-
+            // if no ranges return NULL
             if (_ranges.Count == 0)
             {
                 state = default(T);
                 return false;
             }
+            
             var first = _ranges[0];
+            // check the first - in most cases the first call will ask for the first range
+            if (first.IsWithin(n))
+            {
+                _lastRangeState = first;
+                state = _lastRangeState.Value;
+                return true;
+            }
+            // if less than all return NULL
             if (n < first.From)
             {
                 state = default(T);
                 return false;
             }
+            // if more than all return NULL
             var last = _ranges[0];
             if (n > last.To)
             {
@@ -96,6 +108,7 @@ namespace GrapherApp.UI.Services
             var max = _ranges.Count - 1;
             var index = GetMiddleIndex(min, max);
             var current = _ranges[index];
+            // binary search
             for (var i = 0; i < 512; ++i)
             {
                 if (current.IsWithin(n))
