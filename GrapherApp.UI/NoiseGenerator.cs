@@ -1,6 +1,6 @@
 ﻿namespace GrapherApp.UI
 {
-    public class Noise
+    public class NoiseGenerator
     {
         public static float Generate(double x)
         {
@@ -23,11 +23,11 @@
 
             float t0 = 1.0f - x0 * x0;
             t0 *= t0;
-            n0 = t0 * t0 * grad(perm[i0 & 0xff], x0);
+            n0 = t0 * t0 * grad(Perm[i0 & 0xff], x0);
 
             float t1 = 1.0f - x1 * x1;
             t1 *= t1;
-            n1 = t1 * t1 * grad(perm[i1 & 0xff], x1);
+            n1 = t1 * t1 * grad(Perm[i1 & 0xff], x1);
             // The maximum value of this noise is 8*(3/4)^4 = 2.53125
             // A factor of 0.395 scales to fit exactly within [-1,1]
             return 0.395f * (n0 + n1);
@@ -44,7 +44,7 @@
             const float F2 = 0.366025403f; // F2 = 0.5*(sqrt(3.0)-1.0)
             const float G2 = 0.211324865f; // G2 = (3.0-Math.sqrt(3.0))/6.0
 
-            float n0, n1, n2; // Noise contributions from the three corners
+            float n0, n1, n2; // NoiseGenerator contributions from the three corners
 
             // Skew the input space to determine which simplex cell we're in
             float s = (x + y) * F2; // Hairy factor for 2D
@@ -84,7 +84,7 @@
             else
             {
                 t0 *= t0;
-                n0 = t0 * t0 * grad(perm[ii + perm[jj]], x0, y0);
+                n0 = t0 * t0 * grad(Perm[ii + Perm[jj]], x0, y0);
             }
 
             float t1 = 0.5f - x1 * x1 - y1 * y1;
@@ -92,7 +92,7 @@
             else
             {
                 t1 *= t1;
-                n1 = t1 * t1 * grad(perm[ii + i1 + perm[jj + j1]], x1, y1);
+                n1 = t1 * t1 * grad(Perm[ii + i1 + Perm[jj + j1]], x1, y1);
             }
 
             float t2 = 0.5f - x2 * x2 - y2 * y2;
@@ -100,7 +100,7 @@
             else
             {
                 t2 *= t2;
-                n2 = t2 * t2 * grad(perm[ii + 1 + perm[jj + 1]], x2, y2);
+                n2 = t2 * t2 * grad(Perm[ii + 1 + Perm[jj + 1]], x2, y2);
             }
 
             // Add contributions from each corner to get the final noise value.
@@ -115,7 +115,7 @@
             const float F3 = 0.333333333f;
             const float G3 = 0.166666667f;
 
-            float n0, n1, n2, n3; // Noise contributions from the four corners
+            float n0, n1, n2, n3; // NoiseGenerator contributions from the four corners
 
             // Skew the input space to determine which simplex cell we're in
             float s = (x + y + z) * F3; // Very nice and simple skew factor for 3D
@@ -180,7 +180,7 @@
             else
             {
                 t0 *= t0;
-                n0 = t0 * t0 * grad(perm[ii + perm[jj + perm[kk]]], x0, y0, z0);
+                n0 = t0 * t0 * grad(Perm[ii + Perm[jj + Perm[kk]]], x0, y0, z0);
             }
 
             float t1 = 0.6f - x1 * x1 - y1 * y1 - z1 * z1;
@@ -188,7 +188,7 @@
             else
             {
                 t1 *= t1;
-                n1 = t1 * t1 * grad(perm[ii + i1 + perm[jj + j1 + perm[kk + k1]]], x1, y1, z1);
+                n1 = t1 * t1 * grad(Perm[ii + i1 + Perm[jj + j1 + Perm[kk + k1]]], x1, y1, z1);
             }
 
             float t2 = 0.6f - x2 * x2 - y2 * y2 - z2 * z2;
@@ -196,7 +196,7 @@
             else
             {
                 t2 *= t2;
-                n2 = t2 * t2 * grad(perm[ii + i2 + perm[jj + j2 + perm[kk + k2]]], x2, y2, z2);
+                n2 = t2 * t2 * grad(Perm[ii + i2 + Perm[jj + j2 + Perm[kk + k2]]], x2, y2, z2);
             }
 
             float t3 = 0.6f - x3 * x3 - y3 * y3 - z3 * z3;
@@ -204,7 +204,7 @@
             else
             {
                 t3 *= t3;
-                n3 = t3 * t3 * grad(perm[ii + 1 + perm[jj + 1 + perm[kk + 1]]], x3, y3, z3);
+                n3 = t3 * t3 * grad(Perm[ii + 1 + Perm[jj + 1 + Perm[kk + 1]]], x3, y3, z3);
             }
 
             // Add contributions from each corner to get the final noise value.
@@ -212,7 +212,7 @@
             return 32.0f * (n0 + n1 + n2 + n3); // TODO: The scale factor is preliminary!
         }
 
-        public static byte[] perm = new byte[512] { 151,160,137,91,90,15,
+        public static byte[] Perm = new byte[] { 151,160,137,91,90,15,
               131,13,201,95,96,53,194,233,7,225,140,36,103,30,69,142,8,99,37,240,21,10,23,
               190, 6,148,247,120,234,75,0,26,197,62,94,252,219,203,117,35,11,32,57,177,33,
               88,237,149,56,87,174,20,125,136,171,168, 68,175,74,165,71,134,139,48,27,166,

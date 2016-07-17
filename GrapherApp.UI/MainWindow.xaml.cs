@@ -81,7 +81,7 @@ namespace GrapherApp.UI
                 Version version = ApplicationDeployment.CurrentDeployment.CurrentVersion;
                 nameSuffix = " " +version.Major + "." + version.Minor;
             }
-            Title = "Grapher" + nameSuffix;
+            Title = "YouVisio Grapher" + nameSuffix;
 
             _runnerCreator = new FuncRunnerCreator();
 

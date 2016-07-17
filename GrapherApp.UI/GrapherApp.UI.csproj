@@ -30,10 +30,11 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://youvisio.com/grapher/</InstallUrl>
     <SupportUrl>http://www.youvisio.com</SupportUrl>
-    <ProductName>Grapher</ProductName>
+    <TargetCulture>en</TargetCulture>
+    <ProductName>YouVisio Grapher</ProductName>
     <PublisherName>YouVisio Productions Inc.</PublisherName>
-    <ApplicationRevision>8</ApplicationRevision>
-    <ApplicationVersion>7.5.0.%2a</ApplicationVersion>
+    <ApplicationRevision>10</ApplicationRevision>
+    <ApplicationVersion>7.7.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -160,6 +161,7 @@
     <Compile Include="Services\FuncRunnerCreator.cs" />
     <Compile Include="Services\PointDouble.cs" />
     <Compile Include="Services\RangeSet.cs" />
+    <Compile Include="Time.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -174,7 +176,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Noise.cs" />
+    <Compile Include="NoiseGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

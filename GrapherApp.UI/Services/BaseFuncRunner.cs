@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-
+// ReSharper disable InconsistentNaming
 namespace GrapherApp.UI.Services
 {
     public abstract class BaseFuncRunner
@@ -29,8 +29,8 @@ namespace GrapherApp.UI.Services
         protected BaseFuncRunner fn => this;
         protected const double PI = Math.PI;
         protected const double E = Math.E;
-        protected const double pi = Math.PI;
-        protected const double e = Math.E;
+        protected double time => Time.time;
+        protected double noise(double x) { return NoiseGenerator.Generate(x); }
         protected double clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
         protected double lerp(double a, double b, double c) { return (b - a) * c + a; }
         protected double avg(double a, double b) { return (b - a) * 0.5 + a; }
@@ -68,7 +68,7 @@ namespace GrapherApp.UI.Services
         protected double bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
         protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
 
-
+        protected double Noise(double x) { return NoiseGenerator.Generate(x); }
         protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
         protected double Lerp(double a, double b, double c) { return lerp(a, b, c); }
         protected double Avg(double a, double b) { return avg(a, b); }
