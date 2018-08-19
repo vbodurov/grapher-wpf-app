@@ -76,11 +76,11 @@ namespace GrapherApp.UI
             MouseLeftButtonUp += MainWindow_MouseLeftButtonUp;
 
             var nameSuffix = "";
-            if (ApplicationDeployment.IsNetworkDeployed)
-            {
-                Version version = ApplicationDeployment.CurrentDeployment.CurrentVersion;
+            //if (ApplicationDeployment.IsNetworkDeployed)
+            //{
+                Version version = GetType().Assembly.GetName().Version;
                 nameSuffix = " " +version.Major + "." + version.Minor;
-            }
+            //}
             Title = "YouVisio Grapher" + nameSuffix;
 
             _runnerCreator = new FuncRunnerCreator();
@@ -315,10 +315,10 @@ namespace GrapherApp.UI
             var x2 = double.NaN;
             var y2 = double.NaN;
 
-            var fromX = Math.Min(_eh.PixelToGraphX(0), -3/_scaleTransform.ScaleX);
-            var toX = Math.Max(_eh.PixelToGraphX(CanvasWidth), 3/_scaleTransform.ScaleX);
-            var step = 0.005/_scaleTransform.ScaleX;
-
+            var fromX = Math.Min(_eh.PixelToGraphX(0), -3/_scaleTransform.ScaleX + 0.5);
+            var toX = Math.Max(_eh.PixelToGraphX(CanvasWidth), 3/_scaleTransform.ScaleX - 0.5);
+            var step = 0.0075/_scaleTransform.ScaleX;
+//SourceCode4.Text = fromX + "|" + toX+"|"+DateTime.UtcNow.Ticks;
             for (var x = fromX; x <= toX; x += step)
             {
                 double x1 = x;
@@ -557,7 +557,13 @@ namespace GrapherApp.UI
             IBezierGroup bg = _runners[0]?.BezierGroup;
             if (bg == null || bg.FragmentsCount == 0)
             {
-                txt = txt.Replace(" ","").Replace("\t","").ToLowerInvariant();
+                txt = txt
+                    .Replace(" ","")
+                    .Replace("\t","")
+                    .Replace("\n", "")
+                    .Replace("\r", "")
+                    .Replace("return", "")
+                    .ToLowerInvariant();
                 if (txt.StartsWith("bezier("))
                 {
                     txt = txt.Replace("bezier(", "").Replace("x,", "").Replace("f,", "").Replace("m,", "").Replace(")", "").Replace(";", "");
@@ -586,6 +592,38 @@ namespace GrapherApp.UI
                         IBezierGroupBuilder bgb = new BezierGroup();
                         bgb.from(arr[0],arr[1]);
                         bgb.to(arr[6],arr[7]).curve(arr[2],arr[3],arr[4],arr[5]);
+                        bg = (IBezierGroup)bgb;
+                    }
+                }
+                else if (txt.StartsWith("bezier2parts"))
+                {
+                    txt = txt
+                        .Replace("bezier2parts", "")
+                        .Replace("(", "")
+                        .Replace("x,", "")
+                        .Replace("f,", "")
+                        .Replace("m,", "")
+                        .Replace(")", "")
+                        .Replace(";", "");
+                    var arr =
+                        txt.Split(',')
+                            .Select(s =>
+                            {
+                                double d;
+                                if (double.TryParse(s, out d))
+                                {
+                                    return d;
+                                }
+                                return double.NaN;
+                            })
+                            .Where(d => !double.IsNaN(d))
+                            .ToArray();
+                    if (arr.Length == 16)
+                    {
+                        IBezierGroupBuilder bgb = new BezierGroup();
+                        bgb.from(arr[0], arr[1]);
+                        bgb.to(arr[6], arr[7]).curve(arr[2], arr[3], arr[4], arr[5]);
+                        bgb.to(arr[14], arr[15]).curve(arr[10], arr[11], arr[12], arr[13]);
                         bg = (IBezierGroup)bgb;
                     }
                 }
@@ -623,10 +661,9 @@ namespace GrapherApp.UI
         }
         private void DoubleBezierOnClick(object sender, RoutedEventArgs e)
         {
-            SourceCode1.Text = @"return beziers(b => b.from(-1,-1)
-    .to(0,0).curve(-0.26,-1.63,-0.24,-0.85)
-    .to(1,1).curve(.55,.18,.79,1.5))
-.run(x)";
+            SourceCode1.Text = "return bezier2parts(x, \n"+
+                            "   0.00, 0.00, 0.50, 0.00, 0.30, 1.00, 0.60, 1.00,\n"+
+                            "   0.60, 1.00, 1.00, 1.00, 1.00, 0.30, 1.00, 0.00)";
             ReDrawCanvas();
         }
         private void ClearBezierOnClick(object sender, RoutedEventArgs e)

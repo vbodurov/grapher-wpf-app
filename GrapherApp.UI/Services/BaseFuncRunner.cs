@@ -32,6 +32,8 @@ namespace GrapherApp.UI.Services
         protected double time => Time.time;
         protected double noise(double x) { return NoiseGenerator.Generate(x); }
         protected double clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
+        protected double clamp01(double n) { return clamp(n,0,1); }
+        protected double clampM11(double n) { return clamp(n, -1, 1); }
         protected double lerp(double a, double b, double c) { return (b - a) * c + a; }
         protected double avg(double a, double b) { return (b - a) * 0.5 + a; }
         protected double pow(double x, double n) { return Math.Pow(x, n); }
@@ -67,6 +69,19 @@ namespace GrapherApp.UI.Services
         protected double log10(double x) { return Math.Log10(x); }
         protected double bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
         protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
+        protected float bezier2parts(double x,
+            double ax1, double ay1, double bx1, double by1, double cx1, double cy1, double dx1, double dy1,
+            double ax2, double ay2, double bx2, double by2, double cx2, double cy2, double dx2, double dy2)
+        {
+            if (abs(dx1 - ax2) > 0.001 || abs(dy1 - ay2) > 0.001)
+                throw new ArgumentException($"Not matching bezier curves {dx1},{dy1} != {ax2},{ay2}");
+
+            if (x <= dx1)
+            {
+                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, dx1, dy1);
+            }
+            return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
+        }
 
         protected double Noise(double x) { return NoiseGenerator.Generate(x); }
         protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
@@ -97,6 +112,19 @@ namespace GrapherApp.UI.Services
         protected double Log10(double x) { return log10(x); }
         protected double Bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
         protected double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
+        protected float Bezier2Parts(double x,
+            double ax1, double ay1, double bx1, double by1, double cx1, double cy1, double dx1, double dy1,
+            double ax2, double ay2, double bx2, double by2, double cx2, double cy2, double dx2, double dy2)
+        {
+            if (abs(dx1 - ax2) > 0.001 || abs(dy1 - ay2) > 0.001)
+                throw new ArgumentException($"Not matching bezier curves {dx1},{dy1} != {ax2},{ay2}");
+
+            if (x <= dx1)
+            {
+                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, dx1, dy1);
+            }
+            return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
+        }
     }
 
 }

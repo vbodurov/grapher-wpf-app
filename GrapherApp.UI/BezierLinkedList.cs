@@ -301,6 +301,17 @@ namespace GrapherApp.UI
                 return $"bezier(x,{a.X:N2},{a.Y:N2},{b.X:N2},{b.Y:N2},{c.X:N2},{c.Y:N2},{d.X:N2},{d.Y:N2})";
             }
 
+            if(Count == 2)
+            {
+                var lt = Last;
+                Point e, f, g, h;
+                lt.Path.GetGraphPoints(holder, out e, out f, out g, out h);
+                return "return bezier2parts(x,\n" +
+                $"       {a.X:N2}, {a.Y:N2}, {b.X:N2}, {b.Y:N2}, {c.X:N2}, {c.Y:N2}, {d.X:N2}, {d.Y:N2},\n" +
+                $"       {e.X:N2}, {e.Y:N2}, {f.X:N2}, {f.Y:N2}, {g.X:N2}, {g.Y:N2}, {h.X:N2}, {h.Y:N2})";
+            }
+
+
             return 
                 new StringBuilder()
                 .AppendLine($"return beziers(b => b.from({a.X:N2},{a.Y:N2})")

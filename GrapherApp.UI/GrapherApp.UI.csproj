@@ -33,8 +33,8 @@
     <TargetCulture>en</TargetCulture>
     <ProductName>YouVisio Grapher</ProductName>
     <PublisherName>YouVisio Productions Inc.</PublisherName>
-    <ApplicationRevision>11</ApplicationRevision>
-    <ApplicationVersion>7.7.0.%2a</ApplicationVersion>
+    <ApplicationRevision>16</ApplicationRevision>
+    <ApplicationVersion>7.8.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -152,6 +152,7 @@
     </ApplicationDefinition>
     <Compile Include="BezierLinkedList.cs" />
     <Compile Include="DotType.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="GridLineType.cs" />
     <Compile Include="Model\Vector2.cs" />
     <Compile Include="Model\Vector3.cs" />
