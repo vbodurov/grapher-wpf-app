@@ -23,6 +23,7 @@ namespace GrapherApp.UI
         PathFigure PathFigure { get; }
         BezierSegment BezierSegment { get; }
         void SetPoint(DotType type, Point pos);
+        Point GetPoint(DotType type);
     }
 
     public class BezierLinkedList : IEnumerable<IBezierCurve>
@@ -243,6 +244,25 @@ namespace GrapherApp.UI
                     }
                 }
                 this.SetLines();
+            }
+            public Point GetPoint(DotType type)
+            {
+                if (type == DotType.Control1)
+                {
+                    return BezierSegment.Point1;
+                }
+                else if (type == DotType.Control2)
+                {
+                    return BezierSegment.Point2;
+                }
+                else if (type == DotType.Start)
+                {
+                    return PathFigure.StartPoint;
+                }
+                else //if (type == DotType.End)
+                {
+                    return BezierSegment.Point3;
+                }
             }
 
             public Path Path { get; private set; }

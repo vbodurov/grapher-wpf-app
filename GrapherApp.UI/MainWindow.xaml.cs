@@ -36,8 +36,8 @@ namespace GrapherApp.UI
     public partial class MainWindow : Window, IDrawingBoardHolder
     {
         private const double PixelsPerOne = 250;
-        private const double CanvasWidth = 1024;
-        private const double CanvasHeight = 600;
+        private const double CanvasWidth = 1200;
+        private const double CanvasHeight = 720;
         private const double CanvasHalfWidth = CanvasWidth/2;
         private const double CanvasHalfHeight = CanvasHeight/2;
 
@@ -151,7 +151,38 @@ namespace GrapherApp.UI
 
         private void MoveBezierPont(DraggedBezierPoint point, Point pos)
         {
-            point.Curve.SetPoint(point.Type, pos);
+            if(point.Type == DotType.Control1 || point.Type == DotType.Control2)
+            {
+                point.Curve.SetPoint(point.Type, pos);
+                return;
+            }
+            var prev = point.Curve.GetPoint(point.Type);
+            var diff = pos - prev;
+            if (point.Type == DotType.Start)
+            {
+                point.Curve.SetPoint(point.Type, pos);
+                var c1 = point.Curve.GetPoint(DotType.Control1);
+                point.Curve.SetPoint(DotType.Control1, c1 + diff);
+                var prevCurve = point.Curve.Previous;
+                if (prevCurve != null)
+                {
+                    var c2 = prevCurve.GetPoint(DotType.Control2);
+                    prevCurve.SetPoint(DotType.Control2, c2 + diff);
+                }
+            }
+            else if (point.Type == DotType.End)
+            {
+                point.Curve.SetPoint(point.Type, pos);
+                var c2 = point.Curve.GetPoint(DotType.Control2);
+                point.Curve.SetPoint(DotType.Control2, c2 + diff);
+                var nextCurve = point.Curve.Next;
+                if (nextCurve != null)
+                {
+                    var c1 = nextCurve.GetPoint(DotType.Control1);
+                    nextCurve.SetPoint(DotType.Control1, c1 + diff);
+                }
+            }
+
         }
 
         void IDrawingBoardHolder.OnStartPointMouseDown(object sender, MouseButtonEventArgs e) =>

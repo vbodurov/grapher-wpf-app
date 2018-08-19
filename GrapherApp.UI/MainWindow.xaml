@@ -11,7 +11,7 @@
         </Grid.RowDefinitions>
 
 
-        <Canvas Grid.Row="0" Name="OuterCanvas"  Width="1024" Height="600" Background="WhiteSmoke" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Canvas Grid.Row="0" Name="OuterCanvas"  Width="1200" Height="720" Background="WhiteSmoke" ClipToBounds="True" HorizontalAlignment="Center" VerticalAlignment="Center">
             <Canvas Name="TheCanvas" ClipToBounds="False" HorizontalAlignment="Center" VerticalAlignment="Center"></Canvas>
         </Canvas>
 
