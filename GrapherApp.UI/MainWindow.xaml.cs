@@ -566,20 +566,8 @@ namespace GrapherApp.UI
                     .ToLowerInvariant();
                 if (txt.StartsWith("bezier("))
                 {
-                    txt = txt.Replace("bezier(", "").Replace("x,", "").Replace("f,", "").Replace("m,", "").Replace(")", "").Replace(";", "");
-                    var arr = 
-                        txt.Split(',')
-                        .Select(s =>
-                        {
-                            double d;
-                            if (double.TryParse(s, out d))
-                            {
-                                return d;
-                            }
-                            return double.NaN;
-                        })
-                        .Where(d => !double.IsNaN(d))
-                        .ToArray();
+                    txt = RemoveBezierNonNumbers(txt);
+                    var arr = ToNumbers(txt);
                     if (arr.Length == 4)
                     {
                         IBezierGroupBuilder bgb = new BezierGroup();
@@ -597,33 +585,43 @@ namespace GrapherApp.UI
                 }
                 else if (txt.StartsWith("bezier2parts"))
                 {
-                    txt = txt
-                        .Replace("bezier2parts", "")
-                        .Replace("(", "")
-                        .Replace("x,", "")
-                        .Replace("f,", "")
-                        .Replace("m,", "")
-                        .Replace(")", "")
-                        .Replace(";", "");
-                    var arr =
-                        txt.Split(',')
-                            .Select(s =>
-                            {
-                                double d;
-                                if (double.TryParse(s, out d))
-                                {
-                                    return d;
-                                }
-                                return double.NaN;
-                            })
-                            .Where(d => !double.IsNaN(d))
-                            .ToArray();
-                    if (arr.Length == 16)
+                    txt = RemoveBezierNonNumbers(txt);
+                    var arr = ToNumbers(txt);
+                    if (arr.Length == (8 * 2 - 2))
                     {
                         IBezierGroupBuilder bgb = new BezierGroup();
                         bgb.from(arr[0], arr[1]);
                         bgb.to(arr[6], arr[7]).curve(arr[2], arr[3], arr[4], arr[5]);
-                        bgb.to(arr[14], arr[15]).curve(arr[10], arr[11], arr[12], arr[13]);
+                        bgb.to(arr[12], arr[13]).curve(arr[8], arr[9], arr[10], arr[11]);
+                        bg = (IBezierGroup)bgb;
+                    }
+                }
+                else if (txt.StartsWith("bezier3parts"))
+                {
+                    txt = RemoveBezierNonNumbers(txt);
+                    var arr = ToNumbers(txt);
+                    if (arr.Length == (8 * 3 - 2 * 2))
+                    {
+                        IBezierGroupBuilder bgb = new BezierGroup();
+                        bgb.from(arr[0], arr[1]);
+                        bgb.to(arr[6], arr[7]).curve(arr[2], arr[3], arr[4], arr[5]);
+                        bgb.to(arr[12], arr[13]).curve(arr[8], arr[9], arr[10], arr[11]);
+                        bgb.to(arr[18], arr[19]).curve(arr[14], arr[15], arr[16], arr[17]);
+                        bg = (IBezierGroup)bgb;
+                    }
+                }
+                else if (txt.StartsWith("bezier4parts"))
+                {
+                    txt = RemoveBezierNonNumbers(txt);
+                    var arr = ToNumbers(txt);
+                    if (arr.Length == (8 * 4 - 3 * 2))
+                    {
+                        IBezierGroupBuilder bgb = new BezierGroup();
+                        bgb.from(arr[0], arr[1]);
+                        bgb.to(arr[6], arr[7]).curve(arr[2], arr[3], arr[4], arr[5]);
+                        bgb.to(arr[12], arr[13]).curve(arr[8], arr[9], arr[10], arr[11]);
+                        bgb.to(arr[18], arr[19]).curve(arr[14], arr[15], arr[16], arr[17]);
+                        bgb.to(arr[24], arr[25]).curve(arr[20], arr[21], arr[22], arr[23]);
                         bg = (IBezierGroup)bgb;
                     }
                 }
@@ -641,7 +639,36 @@ namespace GrapherApp.UI
             // ReSharper disable once PossibleNullReferenceException
             GenerateBezierUi(bg, TheCanvas, this);
         }
-
+        static string RemoveBezierNonNumbers(string str)
+        {
+            return new StringBuilder(str)
+                .Replace("bezier4parts", "")
+                .Replace("bezier3parts", "")
+                .Replace("bezier2parts", "")
+                .Replace("bezier", "")
+                .Replace("(", "")
+                .Replace("x,", "")
+                .Replace("f,", "")
+                .Replace("m,", "")
+                .Replace(")", "")
+                .Replace(";", "")
+                .ToString();
+        }
+        static double[] ToNumbers(string str)
+        {
+            return str.Split(',')
+                    .Select(s =>
+                    {
+                        double d;
+                        if (double.TryParse(s, out d))
+                        {
+                            return d;
+                        }
+                        return double.NaN;
+                    })
+                    .Where(d => !double.IsNaN(d))
+                    .ToArray();
+        }
         private void GenerateBezierUi(IBezierGroup bezierGroup, Canvas canvas, IDrawingBoardHolder eventsHolder)
         {
             canvas.Children.Clear();
@@ -662,8 +689,25 @@ namespace GrapherApp.UI
         private void DoubleBezierOnClick(object sender, RoutedEventArgs e)
         {
             SourceCode1.Text = "return bezier2parts(x, \n"+
-                            "   0.00, 0.00, 0.50, 0.00, 0.30, 1.00, 0.60, 1.00,\n"+
+                            "   0.00, 0.00, 0.50, 0.00, 0.30, 1.00,\n"+
                             "   0.60, 1.00, 1.00, 1.00, 1.00, 0.30, 1.00, 0.00)";
+            ReDrawCanvas();
+        }
+        private void TrippleBezierOnClick(object sender, RoutedEventArgs e)
+        {
+            SourceCode1.Text = "return bezier3parts(x, \n" +
+                               "   0.00, 0.00, 0.19, -1.99, 0.20, 1.76,\n" +
+                               "   0.32, 0.53, 0.53, -1.84, 0.52, 1.76,\n" +
+                               "   0.74, -0.53, 0.82, -1.37, 0.88, 0.53, 1.00, 0.00)";
+            ReDrawCanvas();
+        }
+        private void QuadroBezierOnClick(object sender, RoutedEventArgs e)
+        {
+            SourceCode1.Text = "return bezier4parts(x, \n" +
+                               "   0.00, 0.00, 0.22, -1.72, 0.17, 0.67,\n" +
+                               "   0.25, 0.00, 0.36, -0.86, 0.31, 1.07,\n" +
+                               "   0.50, 0.00, 0.59, -0.48, 0.68, 0.30,\n" +
+                               "   0.75, 0.00, 0.84, -0.31, 0.92, 0.32, 1.00, 0.00)";
             ReDrawCanvas();
         }
         private void ClearBezierOnClick(object sender, RoutedEventArgs e)

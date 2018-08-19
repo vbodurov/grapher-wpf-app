@@ -39,9 +39,11 @@
                 <StackPanel Orientation="Vertical" Grid.Row="0" Grid.Column="2" Grid.RowSpan="3">
                     <Button Margin="1" Click="CodeToBezierUiButtonOnClick">Code -&gt; Bezier UI</Button>
                     <StackPanel Orientation="Horizontal">
-                        <Button Width="60" Margin="1" Click="SingleBezierOnClick">1 Bezier</Button>
-                        <Button Width="60" Margin="1" Click="DoubleBezierOnClick">2 Bezier</Button>
-                        <Button Width="20" Margin="1" Click="ClearBezierOnClick">X</Button>
+                        <Button Width="28" Margin="1" Click="SingleBezierOnClick">1 BZ</Button>
+                        <Button Width="28" Margin="1" Click="DoubleBezierOnClick">2 BZ</Button>
+                        <Button Width="28" Margin="1" Click="TrippleBezierOnClick">3 BZ</Button>
+                        <Button Width="28" Margin="1" Click="QuadroBezierOnClick">4 BZ</Button>
+                        <Button Width="22" Margin="1" Click="ClearBezierOnClick">X</Button>
                     </StackPanel>
                     <Button Margin="1" Click="RunButtonOnClick" VerticalAlignment="Top" Height="90">
                         <StackPanel Orientation="Vertical">

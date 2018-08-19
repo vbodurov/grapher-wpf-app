@@ -70,19 +70,54 @@ namespace GrapherApp.UI.Services
         protected double bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
         protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
         protected float bezier2parts(double x,
-            double ax1, double ay1, double bx1, double by1, double cx1, double cy1, double dx1, double dy1,
-            double ax2, double ay2, double bx2, double by2, double cx2, double cy2, double dx2, double dy2)
+            double ax1, double ay1, double bx1, double by1, double cx1, double cy1, 
+            double ax2, double ay2, double bx2, double by2, double cx2, double cy2, 
+            double dx2, double dy2)
         {
-            if (abs(dx1 - ax2) > 0.001 || abs(dy1 - ay2) > 0.001)
-                throw new ArgumentException($"Not matching bezier curves {dx1},{dy1} != {ax2},{ay2}");
-
-            if (x <= dx1)
+            if (x <= ax2)
             {
-                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, dx1, dy1);
+                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, ax2, ay2);
             }
             return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
         }
+        protected float bezier3parts(double x,
+            double ax1, double ay1, double bx1, double by1, double cx1, double cy1, 
+            double ax2, double ay2, double bx2, double by2, double cx2, double cy2, 
+            double ax3, double ay3, double bx3, double by3, double cx3, double cy3, 
+            double dx3, double dy3)
+        {
+            if (x <= ax2)
+            {
+                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, ax2, ay2);
+            }
+            if (x <= ax3)
+            {
+                return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, ax3, ay3);
+            }
+            return (float)BezierHelper.GetY(x, ax3, ay3, bx3, by3, cx3, cy3, dx3, dy3);
+        }
+        protected float bezier4parts(double x,
+            double ax1, double ay1, double bx1, double by1, double cx1, double cy1,
+            double ax2, double ay2, double bx2, double by2, double cx2, double cy2,
+            double ax3, double ay3, double bx3, double by3, double cx3, double cy3,
+            double ax4, double ay4, double bx4, double by4, double cx4, double cy4, 
+            double dx4, double dy4)
+        {
 
+            if (x <= ax2)
+            {
+                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, ax2, ay2);
+            }
+            if (x <= ax3)
+            {
+                return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, ax3, ay3);
+            }
+            if (x <= ax4)
+            {
+                return (float)BezierHelper.GetY(x, ax3, ay3, bx3, by3, cx3, cy3, ax4, ay4);
+            }
+            return (float)BezierHelper.GetY(x, ax4, ay4, bx4, by4, cx4, cy4, dx4, dy4);
+        }
         protected double Noise(double x) { return NoiseGenerator.Generate(x); }
         protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
         protected double Lerp(double a, double b, double c) { return lerp(a, b, c); }
