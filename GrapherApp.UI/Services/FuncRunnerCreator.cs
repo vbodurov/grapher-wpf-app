@@ -46,13 +46,22 @@ namespace GrapherApp.UI.Services
             var lastLine = lines[lastLineIndex].Trim();
             var lastLineIsBracket = (lastLine == ")" || lastLine == ");");
             var sourceHasNoReturnWord = code.IndexOf("return", StringComparison.InvariantCulture) < 0;
-            if (lastLineIsBracket && !firstLine.StartsWith("var ") && sourceHasNoReturnWord)
+            if (sourceHasNoReturnWord && lastLineIsBracket && !firstLine.StartsWith("var "))
             {
                 lines[0] = "return " + firstLine;
                 sourceHasNoReturnWord = false;
             }
             if (sourceHasNoReturnWord && !lastLineIsBracket)
-                lines[lastLineIndex] = "return " + lastLine;
+            {
+                if (firstLine.StartsWith("bezier"))
+                {
+                    lines[0] = "return " + firstLine;
+                }
+                else
+                {
+                    lines[lastLineIndex] = "return " + lastLine;
+                }
+            }
             if (!lastLine.EndsWith(";"))
                 lines[lastLineIndex] = lines[lastLineIndex] + ";";
             code = String.Join("\n", lines);

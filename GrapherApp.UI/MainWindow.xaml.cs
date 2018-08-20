@@ -719,14 +719,14 @@ namespace GrapherApp.UI
         }
         private void DoubleBezierOnClick(object sender, RoutedEventArgs e)
         {
-            SourceCode1.Text = "return bezier2parts(x, \n"+
+            SourceCode1.Text = "bezier2parts(x, \n"+
                             "   0.00, 0.00, 0.50, 0.00, 0.30, 1.00,\n"+
                             "   0.60, 1.00, 1.00, 1.00, 1.00, 0.30, 1.00, 0.00)";
             ReDrawCanvas();
         }
         private void TrippleBezierOnClick(object sender, RoutedEventArgs e)
         {
-            SourceCode1.Text = "return bezier3parts(x, \n" +
+            SourceCode1.Text = "bezier3parts(x, \n" +
                                "   0.00, 0.00, 0.19, -1.99, 0.20, 1.76,\n" +
                                "   0.32, 0.53, 0.53, -1.84, 0.52, 1.76,\n" +
                                "   0.74, -0.53, 0.82, -1.37, 0.88, 0.53, 1.00, 0.00)";
@@ -734,7 +734,7 @@ namespace GrapherApp.UI
         }
         private void QuadroBezierOnClick(object sender, RoutedEventArgs e)
         {
-            SourceCode1.Text = "return bezier4parts(x, \n" +
+            SourceCode1.Text = "bezier4parts(x, \n" +
                                "   0.00, 0.00, 0.22, -1.72, 0.17, 0.67,\n" +
                                "   0.25, 0.00, 0.36, -0.86, 0.31, 1.07,\n" +
                                "   0.50, 0.00, 0.59, -0.48, 0.68, 0.30,\n" +
