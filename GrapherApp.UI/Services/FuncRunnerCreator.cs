@@ -86,6 +86,9 @@ namespace GrapherApp.UI.Services
                 {
                     public override double Run(double x)
                     {
+                        var xx = x;
+                        var xxx = x;
+                        var xxxx = x;
                         " + code + @";
                     }
                 }";

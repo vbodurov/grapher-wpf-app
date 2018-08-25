@@ -118,6 +118,126 @@ namespace GrapherApp.UI.Services
             }
             return (float)BezierHelper.GetY(x, ax4, ay4, bx4, by4, cx4, cy4, dx4, dy4);
         }
+        protected static float uniFun(double x, Func<double, double> f0,
+            double f1StartX, Func<double, double> f1)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x);
+            else y = f1(x);
+            return (float)y;
+        }
+        protected static float uniFun(double x, Func<double, double> f0,
+            double f1StartX, Func<double, double> f1,
+            double f2StartX, Func<double, double> f2)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x);
+            else if (x < f2StartX) y = f1(x);
+            else y = f2(x);
+            return (float)y;
+        }
+        protected static float uniFun(double x, Func<double, double> f0,
+            double f1StartX, Func<double, double> f1,
+            double f2StartX, Func<double, double> f2,
+            double f3StartX, Func<double, double> f3)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x);
+            else if (x < f2StartX) y = f1(x);
+            else if (x < f3StartX) y = f2(x);
+            else y = f3(x);
+            return (float)y;
+        }
+        protected static float uniFun(double x, Func<double, double> f0,
+            double f1StartX, Func<double, double> f1,
+            double f2StartX, Func<double, double> f2,
+            double f3StartX, Func<double, double> f3,
+            double f4StartX, Func<double, double> f4)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x);
+            else if (x < f2StartX) y = f1(x);
+            else if (x < f3StartX) y = f2(x);
+            else if (x < f4StartX) y = f3(x);
+            else y = f4(x);
+            return (float)y;
+        }
+        protected static float uniFun(double x, Func<double, double> f0,
+            double f1StartX, Func<double, double> f1,
+            double f2StartX, Func<double, double> f2,
+            double f3StartX, Func<double, double> f3,
+            double f4StartX, Func<double, double> f4,
+            double f5StartX, Func<double, double> f5)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x);
+            else if (x < f2StartX) y = f1(x);
+            else if (x < f3StartX) y = f2(x);
+            else if (x < f4StartX) y = f3(x);
+            else if (x < f5StartX) y = f4(x);
+            else y = f5(x);
+            return (float)y;
+        }
+        protected static float uniFun01(double x, Func<double, double> f0,
+            double f1StartX, Func<double, double> f1)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
+            else y = f1(x.FromRangeTo01(f1StartX, 1));
+            return (float)y;
+        }
+        protected static float uniFun01(double x, Func<double, double> f0,
+           double f1StartX, Func<double, double> f1,
+           double f2StartX, Func<double, double> f2)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
+            else if (x < f2StartX) y = f1(x.FromRangeTo01(f1StartX, f2StartX));
+            else y = f2(x.FromRangeTo01(f2StartX, 1));
+            return (float)y;
+        }
+        protected static float uniFun01(double x, Func<double, double> f0,
+           double f1StartX, Func<double, double> f1,
+           double f2StartX, Func<double, double> f2,
+           double f3StartX, Func<double, double> f3)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
+            else if (x < f2StartX) y = f1(x.FromRangeTo01(f1StartX, f2StartX));
+            else if (x < f3StartX) y = f2(x.FromRangeTo01(f2StartX, f3StartX));
+            else y = f3(x.FromRangeTo01(f3StartX, 1));
+            return (float)y;
+        }
+        protected static float uniFun01(double x, Func<double, double> f0,
+           double f1StartX, Func<double, double> f1,
+           double f2StartX, Func<double, double> f2,
+           double f3StartX, Func<double, double> f3,
+           double f4StartX, Func<double, double> f4)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
+            else if (x < f2StartX) y = f1(x.FromRangeTo01(f1StartX, f2StartX));
+            else if (x < f3StartX) y = f2(x.FromRangeTo01(f2StartX, f3StartX));
+            else if (x < f4StartX) y = f3(x.FromRangeTo01(f3StartX, f4StartX));
+            else y = f4(x.FromRangeTo01(f4StartX, 1));
+            return (float)y;
+        }
+        protected static float uniFun01(double x, Func<double, double> f0,
+           double f1StartX, Func<double, double> f1,
+           double f2StartX, Func<double, double> f2,
+           double f3StartX, Func<double, double> f3,
+           double f4StartX, Func<double, double> f4,
+           double f5StartX, Func<double, double> f5)
+        {
+            double y;
+            if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
+            else if (x < f2StartX) y = f1(x.FromRangeTo01(f1StartX, f2StartX));
+            else if (x < f3StartX) y = f2(x.FromRangeTo01(f2StartX, f3StartX));
+            else if (x < f4StartX) y = f3(x.FromRangeTo01(f3StartX, f4StartX));
+            else if (x < f5StartX) y = f4(x.FromRangeTo01(f4StartX, f5StartX));
+            else y = f5(x.FromRangeTo01(f5StartX, 1));
+            return (float)y;
+        }
         protected double Noise(double x) { return NoiseGenerator.Generate(x); }
         protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
         protected double Lerp(double a, double b, double c) { return lerp(a, b, c); }
