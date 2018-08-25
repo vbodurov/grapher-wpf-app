@@ -33,7 +33,7 @@
     <TargetCulture>en</TargetCulture>
     <ProductName>YouVisio Grapher</ProductName>
     <PublisherName>YouVisio Productions Inc.</PublisherName>
-    <ApplicationRevision>22</ApplicationRevision>
+    <ApplicationRevision>23</ApplicationRevision>
     <ApplicationVersion>8.5.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
