@@ -80,9 +80,11 @@ namespace GrapherApp.UI.Services
 
             var name = "FuncRunner" + DateTime.UtcNow.Ticks;
 
-            var script =
-                @"using System;
-                public class "+ name + @" : GrapherApp.UI.Services.BaseFuncRunner
+            var script = @"
+                using System;
+                using GrapherApp.UI;
+
+                public class " + name + @" : GrapherApp.UI.Services.BaseFuncRunner
                 {
                     public override double Run(double x)
                     {

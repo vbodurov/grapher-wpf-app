@@ -69,7 +69,7 @@ namespace GrapherApp.UI.Services
         protected double log10(double x) { return Math.Log10(x); }
         protected double bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
         protected double bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
-        protected float bezier2parts(double x,
+        protected double bezier2parts(double x,
             double ax1, double ay1, double bx1, double by1, double cx1, double cy1, 
             double ax2, double ay2, double bx2, double by2, double cx2, double cy2, 
             double dx2, double dy2)
@@ -80,7 +80,7 @@ namespace GrapherApp.UI.Services
             }
             return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
         }
-        protected float bezier3parts(double x,
+        protected double bezier3parts(double x,
             double ax1, double ay1, double bx1, double by1, double cx1, double cy1, 
             double ax2, double ay2, double bx2, double by2, double cx2, double cy2, 
             double ax3, double ay3, double bx3, double by3, double cx3, double cy3, 
@@ -96,7 +96,7 @@ namespace GrapherApp.UI.Services
             }
             return (float)BezierHelper.GetY(x, ax3, ay3, bx3, by3, cx3, cy3, dx3, dy3);
         }
-        protected float bezier4parts(double x,
+        protected double bezier4parts(double x,
             double ax1, double ay1, double bx1, double by1, double cx1, double cy1,
             double ax2, double ay2, double bx2, double by2, double cx2, double cy2,
             double ax3, double ay3, double bx3, double by3, double cx3, double cy3,
@@ -106,27 +106,27 @@ namespace GrapherApp.UI.Services
 
             if (x <= ax2)
             {
-                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, ax2, ay2);
+                return BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, ax2, ay2);
             }
             if (x <= ax3)
             {
-                return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, ax3, ay3);
+                return BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, ax3, ay3);
             }
             if (x <= ax4)
             {
-                return (float)BezierHelper.GetY(x, ax3, ay3, bx3, by3, cx3, cy3, ax4, ay4);
+                return BezierHelper.GetY(x, ax3, ay3, bx3, by3, cx3, cy3, ax4, ay4);
             }
-            return (float)BezierHelper.GetY(x, ax4, ay4, bx4, by4, cx4, cy4, dx4, dy4);
+            return BezierHelper.GetY(x, ax4, ay4, bx4, by4, cx4, cy4, dx4, dy4);
         }
-        protected static float uniFun(double x, Func<double, double> f0,
+        protected static double uniFun(double x, Func<double, double> f0,
             double f1StartX, Func<double, double> f1)
         {
             double y;
             if (x < f1StartX) y = f0(x);
             else y = f1(x);
-            return (float)y;
+            return y;
         }
-        protected static float uniFun(double x, Func<double, double> f0,
+        protected static double uniFun(double x, Func<double, double> f0,
             double f1StartX, Func<double, double> f1,
             double f2StartX, Func<double, double> f2)
         {
@@ -134,9 +134,9 @@ namespace GrapherApp.UI.Services
             if (x < f1StartX) y = f0(x);
             else if (x < f2StartX) y = f1(x);
             else y = f2(x);
-            return (float)y;
+            return y;
         }
-        protected static float uniFun(double x, Func<double, double> f0,
+        protected static double uniFun(double x, Func<double, double> f0,
             double f1StartX, Func<double, double> f1,
             double f2StartX, Func<double, double> f2,
             double f3StartX, Func<double, double> f3)
@@ -146,9 +146,9 @@ namespace GrapherApp.UI.Services
             else if (x < f2StartX) y = f1(x);
             else if (x < f3StartX) y = f2(x);
             else y = f3(x);
-            return (float)y;
+            return y;
         }
-        protected static float uniFun(double x, Func<double, double> f0,
+        protected static double uniFun(double x, Func<double, double> f0,
             double f1StartX, Func<double, double> f1,
             double f2StartX, Func<double, double> f2,
             double f3StartX, Func<double, double> f3,
@@ -160,9 +160,9 @@ namespace GrapherApp.UI.Services
             else if (x < f3StartX) y = f2(x);
             else if (x < f4StartX) y = f3(x);
             else y = f4(x);
-            return (float)y;
+            return y;
         }
-        protected static float uniFun(double x, Func<double, double> f0,
+        protected static double uniFun(double x, Func<double, double> f0,
             double f1StartX, Func<double, double> f1,
             double f2StartX, Func<double, double> f2,
             double f3StartX, Func<double, double> f3,
@@ -176,17 +176,17 @@ namespace GrapherApp.UI.Services
             else if (x < f4StartX) y = f3(x);
             else if (x < f5StartX) y = f4(x);
             else y = f5(x);
-            return (float)y;
+            return y;
         }
-        protected static float uniFun01(double x, Func<double, double> f0,
+        protected static double uniFun01(double x, Func<double, double> f0,
             double f1StartX, Func<double, double> f1)
         {
             double y;
             if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
             else y = f1(x.FromRangeTo01(f1StartX, 1));
-            return (float)y;
+            return y;
         }
-        protected static float uniFun01(double x, Func<double, double> f0,
+        protected static double uniFun01(double x, Func<double, double> f0,
            double f1StartX, Func<double, double> f1,
            double f2StartX, Func<double, double> f2)
         {
@@ -194,9 +194,9 @@ namespace GrapherApp.UI.Services
             if (x < f1StartX) y = f0(x.FromRangeTo01(0, f1StartX));
             else if (x < f2StartX) y = f1(x.FromRangeTo01(f1StartX, f2StartX));
             else y = f2(x.FromRangeTo01(f2StartX, 1));
-            return (float)y;
+            return y;
         }
-        protected static float uniFun01(double x, Func<double, double> f0,
+        protected static double uniFun01(double x, Func<double, double> f0,
            double f1StartX, Func<double, double> f1,
            double f2StartX, Func<double, double> f2,
            double f3StartX, Func<double, double> f3)
@@ -206,9 +206,9 @@ namespace GrapherApp.UI.Services
             else if (x < f2StartX) y = f1(x.FromRangeTo01(f1StartX, f2StartX));
             else if (x < f3StartX) y = f2(x.FromRangeTo01(f2StartX, f3StartX));
             else y = f3(x.FromRangeTo01(f3StartX, 1));
-            return (float)y;
+            return y;
         }
-        protected static float uniFun01(double x, Func<double, double> f0,
+        protected static double uniFun01(double x, Func<double, double> f0,
            double f1StartX, Func<double, double> f1,
            double f2StartX, Func<double, double> f2,
            double f3StartX, Func<double, double> f3,
@@ -220,9 +220,9 @@ namespace GrapherApp.UI.Services
             else if (x < f3StartX) y = f2(x.FromRangeTo01(f2StartX, f3StartX));
             else if (x < f4StartX) y = f3(x.FromRangeTo01(f3StartX, f4StartX));
             else y = f4(x.FromRangeTo01(f4StartX, 1));
-            return (float)y;
+            return y;
         }
-        protected static float uniFun01(double x, Func<double, double> f0,
+        protected static double uniFun01(double x, Func<double, double> f0,
            double f1StartX, Func<double, double> f1,
            double f2StartX, Func<double, double> f2,
            double f3StartX, Func<double, double> f3,
@@ -236,7 +236,7 @@ namespace GrapherApp.UI.Services
             else if (x < f4StartX) y = f3(x.FromRangeTo01(f3StartX, f4StartX));
             else if (x < f5StartX) y = f4(x.FromRangeTo01(f4StartX, f5StartX));
             else y = f5(x.FromRangeTo01(f5StartX, 1));
-            return (float)y;
+            return y;
         }
         protected double Noise(double x) { return NoiseGenerator.Generate(x); }
         protected double Clamp(double n, double min, double max) { return n < min ? min : n > max ? max : n; }
@@ -267,7 +267,7 @@ namespace GrapherApp.UI.Services
         protected double Log10(double x) { return log10(x); }
         protected double Bezier(double x, double bx, double by, double cx, double cy) { return BezierHelper.GetY(x, 0, 0, bx, by, cx, cy, 1 ,1); }
         protected double Bezier(double x, double ax, double ay, double bx, double by, double cx, double cy, double dx, double dy) { return BezierHelper.GetY(x, ax, ay, bx, by, cx, cy, dx, dy); }
-        protected float Bezier2Parts(double x,
+        protected double Bezier2Parts(double x,
             double ax1, double ay1, double bx1, double by1, double cx1, double cy1, double dx1, double dy1,
             double ax2, double ay2, double bx2, double by2, double cx2, double cy2, double dx2, double dy2)
         {
@@ -276,9 +276,9 @@ namespace GrapherApp.UI.Services
 
             if (x <= dx1)
             {
-                return (float)BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, dx1, dy1);
+                return BezierHelper.GetY(x, ax1, ay1, bx1, by1, cx1, cy1, dx1, dy1);
             }
-            return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
+            return BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
         }
     }
 
