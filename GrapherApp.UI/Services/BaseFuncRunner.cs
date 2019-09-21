@@ -80,6 +80,28 @@ namespace GrapherApp.UI.Services
             }
             return (float)BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
         }
+        protected double smoothstep(double x)
+        {
+            return smoothstep(0, 1, x);
+        }
+        protected double smoothstep(double edge0, double edge1, double x)
+        {
+            // Scale, bias and saturate x to 0..1 range
+            x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+            // Evaluate polynomial
+            return x * x * (3 - 2 * x);
+        }
+        protected double smootherstep(double x)
+        {
+            return smootherstep(0, 1, x);
+        }
+        protected double smootherstep(double edge0, double edge1, double x)
+        {
+            // Scale, and clamp x to 0..1 range
+            x = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+            // Evaluate polynomial
+            return x * x * x * (x * (x * 6 - 15) + 10);
+        }
         protected double bezier3parts(double x,
             double ax1, double ay1, double bx1, double by1, double cx1, double cy1, 
             double ax2, double ay2, double bx2, double by2, double cx2, double cy2, 
@@ -280,6 +302,14 @@ namespace GrapherApp.UI.Services
             }
             return BezierHelper.GetY(x, ax2, ay2, bx2, by2, cx2, cy2, dx2, dy2);
         }
+
+        protected double dotProductByDegree(double degree)
+        {
+            var iDeg = (int)abs(Math.Round(degree));
+            if (iDeg > 180) iDeg = iDeg % 180;
+            return DotProductByDegree[iDeg];
+        }
+        static readonly float[] DotProductByDegree = { 1f, 0.9998477f, 0.9993908f, 0.9986295f, 0.9975641f, 0.9961947f, 0.9945219f, 0.9925461f, 0.9902681f, 0.9876884f, 0.9848077f, 0.9816272f, 0.9781476f, 0.9743701f, 0.9702957f, 0.9659258f, 0.9612617f, 0.9563048f, 0.9510565f, 0.9455186f, 0.9396926f, 0.9335804f, 0.9271839f, 0.9205049f, 0.9135454f, 0.9063078f, 0.8987941f, 0.8910065f, 0.8829476f, 0.8746197f, 0.8660254f, 0.8571673f, 0.8480481f, 0.8386706f, 0.8290376f, 0.8191521f, 0.809017f, 0.7986355f, 0.7880108f, 0.7771459f, 0.7660445f, 0.7547096f, 0.7431449f, 0.7313538f, 0.7193398f, 0.7071067f, 0.6946584f, 0.6819984f, 0.6691306f, 0.656059f, 0.6427876f, 0.6293204f, 0.6156615f, 0.601815f, 0.5877852f, 0.5735765f, 0.5591929f, 0.5446391f, 0.5299193f, 0.5150381f, 0.5f, 0.4848096f, 0.4694716f, 0.4539905f, 0.4383711f, 0.4226182f, 0.4067366f, 0.3907312f, 0.3746066f, 0.3583679f, 0.3420201f, 0.3255681f, 0.309017f, 0.2923717f, 0.2756374f, 0.258819f, 0.2419218f, 0.224951f, 0.2079117f, 0.1908091f, 0.1736482f, 0.1564345f, 0.1391731f, 0.1218693f, 0.1045284f, 0.08715588f, 0.06975645f, 0.05233604f, 0.03489941f, 0.01745242f, 0f, -0.01745248f, -0.03489947f, -0.05233586f, -0.06975651f, -0.0871557f, -0.1045285f, -0.1218693f, -0.139173f, -0.1564344f, -0.1736481f, -0.1908089f, -0.2079116f, -0.224951f, -0.2419218f, -0.258819f, -0.2756375f, -0.2923716f, -0.3090171f, -0.3255682f, -0.3420202f, -0.3583679f, -0.3746065f, -0.3907312f, -0.4067366f, -0.4226184f, -0.4383712f, -0.4539905f, -0.4694716f, -0.4848095f, -0.5000001f, -0.515038f, -0.5299193f, -0.5446391f, -0.5591928f, -0.5735766f, -0.5877852f, -0.601815f, -0.6156615f, -0.6293204f, -0.6427877f, -0.656059f, -0.6691307f, -0.6819984f, -0.6946582f, -0.7071067f, -0.7193398f, -0.7313538f, -0.7431448f, -0.7547096f, -0.7660444f, -0.777146f, -0.7880107f, -0.7986356f, -0.8090171f, -0.819152f, -0.8290374f, -0.8386706f, -0.8480481f, -0.8571672f, -0.8660253f, -0.8746197f, -0.8829476f, -0.8910065f, -0.8987941f, -0.9063078f, -0.9135456f, -0.9205048f, -0.9271837f, -0.9335804f, -0.9396925f, -0.9455187f, -0.9510566f, -0.9563048f, -0.9612616f, -0.9659257f, -0.9702957f, -0.9743701f, -0.9781476f, -0.9816272f, -0.9848078f, -0.9876882f, -0.9902682f, -0.9925461f, -0.9945219f, -0.9961947f, -0.9975641f, -0.9986296f, -0.9993908f, -0.9998477f, -1f };
     }
 
 }
