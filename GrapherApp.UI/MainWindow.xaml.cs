@@ -402,9 +402,9 @@ namespace GrapherApp.UI
             return (pixelCoord - _scaleTransform.CenterY)/(-PixelsPerOne*_scaleTransform.ScaleY);
         }
 
-        private static readonly SolidColorBrush BrushAxis = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xBB, 0xFF));
-        private static readonly SolidColorBrush BrushMajor = new SolidColorBrush(Color.FromArgb(0xFF, 0xAA, 0xAA, 0xAA));
-        private static readonly SolidColorBrush BrushMinor = new SolidColorBrush(Color.FromArgb(0x99, 0xCC, 0xCC, 0xCC));
+        private static readonly SolidColorBrush BrushAxis = new SolidColorBrush(Color.FromArgb(0x99, 0xFF, 0xBB, 0xFF));
+        private static readonly SolidColorBrush BrushMajor = new SolidColorBrush(Color.FromArgb(0x99, 0xAA, 0xAA, 0xAA));
+        private static readonly SolidColorBrush BrushMinor = new SolidColorBrush(Color.FromArgb(0x33, 0xCC, 0xCC, 0xCC));
         private static readonly IDictionary<Color,SolidColorBrush> Brushes = new Dictionary<Color, SolidColorBrush>();
 
         private Line AddGridLine(double x1, double y1, double x2, double y2, GridLineType type)
@@ -712,19 +712,19 @@ namespace GrapherApp.UI
         }
 
 
-        private void SingleBezierOnClick(object sender, RoutedEventArgs e)
+        void SingleBezierOnClick(object sender, RoutedEventArgs e)
         {
             SourceCode1.Text = "bezier(x,.17,.67,.8,.33)";
             ReDrawCanvas();
         }
-        private void DoubleBezierOnClick(object sender, RoutedEventArgs e)
+        void DoubleBezierOnClick(object sender, RoutedEventArgs e)
         {
             SourceCode1.Text = "bezier2parts(x, \n"+
                             "   0.00, 0.00, 0.50, 0.00, 0.30, 1.00,\n"+
                             "   0.60, 1.00, 1.00, 1.00, 1.00, 0.30, 1.00, 0.00)";
             ReDrawCanvas();
         }
-        private void TrippleBezierOnClick(object sender, RoutedEventArgs e)
+        void TrippleBezierOnClick(object sender, RoutedEventArgs e)
         {
             SourceCode1.Text = "bezier3parts(x, \n" +
                                "   0.00, 0.00, 0.19, -1.99, 0.20, 1.76,\n" +
@@ -732,7 +732,7 @@ namespace GrapherApp.UI
                                "   0.74, -0.53, 0.82, -1.37, 0.88, 0.53, 1.00, 0.00)";
             ReDrawCanvas();
         }
-        private void QuadroBezierOnClick(object sender, RoutedEventArgs e)
+        void QuadroBezierOnClick(object sender, RoutedEventArgs e)
         {
             SourceCode1.Text = "bezier4parts(x, \n" +
                                "   0.00, 0.00, 0.22, -1.72, 0.17, 0.67,\n" +
@@ -741,7 +741,7 @@ namespace GrapherApp.UI
                                "   0.75, 0.00, 0.84, -0.31, 0.92, 0.32, 1.00, 0.00)";
             ReDrawCanvas();
         }
-        private void ClearBezierOnClick(object sender, RoutedEventArgs e)
+        void ClearBezierOnClick(object sender, RoutedEventArgs e)
         {
             _beziers.Clear(TheCanvas, this);
             TheCanvas.Children.Clear();
